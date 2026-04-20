@@ -23,10 +23,12 @@ import {
   BookmarkCheck,
   CalendarDays,
   CheckCircle,
+  Info,
   MapPin,
   Phone,
   Star,
   Users,
+  XCircle,
 } from "lucide-react";
 
 type DisplayOption = QuoteOption | GeneratedOption;
@@ -46,7 +48,6 @@ const TIER = {
     header:  "bg-emerald-50 border-emerald-100",
     badge:   "success" as const,
     item:    "bg-emerald-50 border-emerald-100",
-    pill:    "bg-emerald-100 text-emerald-700",
     cta:     "bg-emerald-600 hover:bg-emerald-700 text-white",
   },
   balanceada: {
@@ -56,8 +57,7 @@ const TIER = {
     header:  "bg-brand-50 border-brand-100",
     badge:   "brand" as const,
     item:    "bg-brand-50 border-brand-100",
-    pill:    "bg-brand-100 text-brand-700",
-    cta:     "",  // uses gradient-brand
+    cta:     "",
     recommended: true,
   },
   premium: {
@@ -67,7 +67,6 @@ const TIER = {
     header:  "bg-amber-50 border-amber-100",
     badge:   "warning" as const,
     item:    "bg-amber-50 border-amber-100",
-    pill:    "bg-amber-100 text-amber-700",
     cta:     "bg-amber-500 hover:bg-amber-600 text-white",
   },
 } as const;
@@ -79,32 +78,39 @@ function getItems(opt: DisplayOption) {
   return [];
 }
 
+function getUnavailable(opt: DisplayOption): ServiceType[] {
+  if ("unavailable_services" in opt && Array.isArray(opt.unavailable_services))
+    return opt.unavailable_services as ServiceType[];
+  return [];
+}
+
 function getBudgetPct(opt: DisplayOption, budget: number): number {
   if ("budget_pct" in opt && typeof opt.budget_pct === "number") return opt.budget_pct;
   return Math.round((opt.total_price_cop / budget) * 100);
 }
 
+function getOptId(opt: DisplayOption): string | null {
+  return ("id" in opt && typeof opt.id === "string") ? opt.id : null;
+}
+
 export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGuest }: Props) {
   const router = useRouter();
-  const [saved, setSaved] = useState<Set<string>>(new Set());
-  const [savingId, setSavingId] = useState<string | null>(null);
+  // Track saved by option_type (stable key) so both DB-id and in-memory options work
+  const [savedTypes, setSavedTypes] = useState<Set<string>>(new Set());
+  const [savingType, setSavingType] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [guestNudgeType, setGuestNudgeType] = useState<string | null>(null);
   const [displayOptions, setDisplayOptions] = useState<DisplayOption[]>(options);
 
-  // If the DB returned no options (e.g. a silent write failure), fall back to
-  // the options the API cached in sessionStorage right after generation.
+  // Fall back to sessionStorage when DB returned no options (silent write failure)
   useEffect(() => {
     if (options.length === 0 && quoteRequestId) {
       const stored = sessionStorage.getItem(quoteRequestId);
       if (stored) {
         try {
           const { options: cached } = JSON.parse(stored) as { options: DisplayOption[] };
-          if (Array.isArray(cached) && cached.length > 0) {
-            setDisplayOptions(cached);
-          }
-        } catch {
-          // malformed cache — ignore
-        }
+          if (Array.isArray(cached) && cached.length > 0) setDisplayOptions(cached);
+        } catch { /* ignore malformed cache */ }
       }
     }
   }, [options.length, quoteRequestId]);
@@ -119,25 +125,50 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
   const eventDate     = req.event_date;
   const venueType     = req.venue_type;
 
-  async function handleSave(optionId: string) {
-    if (isGuest || !quoteRequestId) { router.push("/registro"); return; }
-    setSavingId(optionId);
+  // Collect services that couldn't be matched across all options (show once at bottom)
+  const globalUnavailable: ServiceType[] = (() => {
+    const first = displayOptions[0];
+    if (!first) return [];
+    return getUnavailable(first);
+  })();
+
+  async function handleSave(opt: DisplayOption) {
+    const optType = opt.option_type;
+
+    if (isGuest) {
+      setGuestNudgeType((prev) => (prev === optType ? null : optType));
+      return;
+    }
+
+    if (!quoteRequestId) {
+      setSaveError("No se pudo identificar la solicitud. Vuelve a generar la cotización.");
+      return;
+    }
+
+    setSavingType(optType);
     setSaveError(null);
+
+    const optId = getOptId(opt);
+    const body = optId
+      ? { quote_request_id: quoteRequestId, quote_option_id: optId }
+      : { quote_request_id: quoteRequestId, option_data: opt };
 
     const res = await fetch("/api/cotizaciones/guardar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ quote_request_id: quoteRequestId, quote_option_id: optionId }),
+      body: JSON.stringify(body),
     });
 
-    setSavingId(null);
+    setSavingType(null);
+
     if (res.ok) {
-      setSaved((prev) => new Set(Array.from(prev).concat(optionId)));
+      // Always mark by option_type so the button reflects the saved state
+      setSavedTypes((prev) => new Set([...prev, optType]));
     } else if (res.status === 401) {
       router.push("/login");
     } else {
-      const d = await res.json();
-      setSaveError(d.error ?? "Error al guardar.");
+      const d = await res.json().catch(() => ({}));
+      setSaveError(d.error ?? "Error al guardar. Intenta de nuevo.");
     }
   }
 
@@ -178,7 +209,8 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
               {eventDate && (
                 <span className="flex items-center gap-1.5">
                   <CalendarDays size={13} className="text-gray-400" />
-                  {new Intl.DateTimeFormat("es-CO", { day: "numeric", month: "long", year: "numeric" }).format(new Date(eventDate + "T12:00:00"))}
+                  {new Intl.DateTimeFormat("es-CO", { day: "numeric", month: "long", year: "numeric" })
+                    .format(new Date(eventDate + "T12:00:00"))}
                 </span>
               )}
             </div>
@@ -190,13 +222,13 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
         </div>
       </div>
 
-      {/* Guest nudge */}
+      {/* Guest banner */}
       {isGuest && (
         <div className="bg-gradient-to-r from-brand-50 to-violet-50 border border-brand-100 rounded-2xl px-5 py-4 mb-6 flex items-center gap-3">
           <Star size={15} className="text-brand-500 flex-shrink-0" />
           <p className="text-sm text-brand-700">
             <Link href="/registro" className="font-bold underline underline-offset-2">Crea una cuenta gratis</Link>
-            {" "}para guardar estas cotizaciones y acceder a ellas desde cualquier dispositivo.
+            {" "}para guardar estas opciones y acceder a ellas desde cualquier dispositivo.
           </p>
         </div>
       )}
@@ -224,16 +256,17 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
           {displayOptions.map((opt) => {
             const tier   = TIER[opt.option_type as TierKey] ?? TIER.balanceada;
             const items  = getItems(opt);
-            const pct    = Math.min(getBudgetPct(opt, budget), 150); // cap bar at 150%
+            const unavailable = getUnavailable(opt);
+            const pct    = Math.min(getBudgetPct(opt, budget), 150);
             const over   = opt.total_price_cop > budget;
-            const optId  = ("id" in opt ? opt.id : null) as string | null;
-            const isSaved    = optId ? saved.has(optId) : false;
-            const isSaving   = optId === savingId;
+            const isSaved   = savedTypes.has(opt.option_type);
+            const isSaving  = savingType === opt.option_type;
             const isRecommended = (tier as { recommended?: boolean }).recommended ?? false;
+            const showGuestNudge = isGuest && guestNudgeType === opt.option_type;
 
             return (
               <div
-                key={optId ?? opt.option_type}
+                key={opt.option_type}
                 className={cn(
                   "bg-white rounded-3xl border-2 flex flex-col relative overflow-hidden shadow-card transition-all duration-200 hover:shadow-card-md",
                   isRecommended ? "ring-2 " + tier.ring : "border-gray-100"
@@ -261,7 +294,7 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
                   <p className="text-3xl font-black text-gray-900 leading-none">
                     {formatCOP(opt.total_price_cop)}
                   </p>
-                  <div className="mt-2 flex items-center gap-2">
+                  <div className="mt-2">
                     {over ? (
                       <p className="text-xs text-orange-500 font-medium">
                         +{formatCOP(opt.total_price_cop - budget)} sobre el presupuesto
@@ -269,12 +302,12 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
                     ) : (
                       <p className="text-xs text-emerald-600 flex items-center gap-1 font-medium">
                         <CheckCircle size={11} />
-                        Dentro del presupuesto — te sobran {formatCOP(budget - opt.total_price_cop)}
+                        Te sobran {formatCOP(budget - opt.total_price_cop)}
                       </p>
                     )}
                   </div>
 
-                  {/* Budget progress bar */}
+                  {/* Budget bar */}
                   <div className="mt-3">
                     <div className="h-1.5 rounded-full bg-gray-200 overflow-hidden">
                       <div
@@ -353,7 +386,41 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
                       </div>
                     );
                   })}
+
+                  {/* Unavailable services for this option */}
+                  {unavailable.length > 0 && (
+                    <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-3">
+                      <div className="flex items-start gap-2">
+                        <XCircle size={13} className="text-gray-300 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-xs font-semibold text-gray-400 mb-1">
+                            Sin proveedor disponible
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            {unavailable.map((s) => (
+                              <span key={s} className="text-xs text-gray-400 bg-white border border-gray-200 rounded-full px-2 py-0.5">
+                                {SERVICE_ICONS[s]} {SERVICE_LABELS[s]}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
+
+                {/* Guest save nudge — per card */}
+                {showGuestNudge && (
+                  <div className="mx-6 mb-3 bg-brand-50 border border-brand-200 rounded-xl px-4 py-3 flex items-start gap-2">
+                    <Info size={13} className="text-brand-500 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-brand-700 leading-relaxed">
+                      Para guardar esta cotización{" "}
+                      <Link href="/registro" className="font-bold underline underline-offset-2">crea una cuenta gratis</Link>
+                      {" "}o{" "}
+                      <Link href="/login" className="font-bold underline underline-offset-2">inicia sesión</Link>.
+                    </p>
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="px-6 pb-6 pt-2 flex flex-col gap-2">
@@ -362,7 +429,9 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
                     size="sm"
                     className="w-full"
                     onClick={() => {
-                      const subject = encodeURIComponent(`Cotización ${eventType}${eventTheme ? " · " + eventTheme : ""} — pepe by Sempertex`);
+                      const subject = encodeURIComponent(
+                        `Cotización ${eventType}${eventTheme ? " · " + eventTheme : ""} — pepe by Sempertex`
+                      );
                       window.open(`mailto:hola@pepe.co?subject=${subject}`, "_blank");
                     }}
                   >
@@ -373,12 +442,16 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
                   <Button
                     variant={isSaved ? "secondary" : "outline"}
                     size="sm"
-                    className="w-full"
+                    className={cn(
+                      "w-full transition-all",
+                      isSaved && "border-0 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                    )}
                     loading={isSaving}
-                    onClick={() => optId && handleSave(optId)}
+                    disabled={isSaved}
+                    onClick={() => handleSave(opt)}
                   >
                     {isSaved ? <BookmarkCheck size={13} /> : <Bookmark size={13} />}
-                    {isSaved ? "Guardada en mi cuenta" : "Guardar cotización"}
+                    {isSaved ? "Guardada ✓" : "Guardar cotización"}
                   </Button>
                 </div>
               </div>
@@ -387,16 +460,43 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
         </div>
       )}
 
-      {/* Bottom tip */}
+      {/* Global unavailable services notice */}
+      {globalUnavailable.length > 0 && (
+        <div className="mt-6 bg-white border border-gray-100 rounded-2xl px-6 py-5 shadow-card">
+          <div className="flex items-start gap-3">
+            <Info size={16} className="text-gray-300 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-gray-600 mb-2">
+                Servicios sin proveedor disponible actualmente
+              </p>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {globalUnavailable.map((s) => (
+                  <span key={s} className="inline-flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-full px-2.5 py-1">
+                    {SERVICE_ICONS[s]} {SERVICE_LABELS[s]}
+                  </span>
+                ))}
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                Estamos creciendo nuestra red de proveedores. Estos servicios no están disponibles aún en tu ciudad.{" "}
+                <Link href="/cotizar" className="text-brand-500 hover:text-brand-700 font-medium">
+                  Vuelve a cotizar
+                </Link>{" "}
+                sin incluirlos para obtener precios más precisos.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Over-budget tip */}
       {displayOptions.some((o) => o.total_price_cop > budget) && (
-        <div className="mt-8 bg-orange-50 border border-orange-100 rounded-2xl px-6 py-5">
+        <div className="mt-6 bg-orange-50 border border-orange-100 rounded-2xl px-6 py-5">
           <p className="text-sm font-semibold text-orange-700 mb-1">
             💡 Sobre el presupuesto
           </p>
           <p className="text-sm text-orange-600 leading-relaxed">
             Algunos servicios se cotizan por persona (pasabocas, picadas, mobiliario, souvenirs),
-            lo que puede elevar el total según el número de invitados. Puedes volver al formulario
-            y ajustar los servicios o el número de invitados.
+            lo que puede elevar el total según el número de invitados.
           </p>
           <Link href="/cotizar" className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold text-orange-700 hover:text-orange-900 transition-colors">
             <ArrowLeft size={14} /> Ajustar mi solicitud

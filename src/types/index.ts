@@ -10,14 +10,44 @@ export type VenueType =
   | "otro";
 
 export type ServiceType =
+  // Decoración
   | "decoracion"
+  | "flores"
+  | "arco_globos"
+  // Entretenimiento
   | "recreacionista"
+  | "dj_musica"
+  | "personaje_tematico"
+  | "show_infantil"
+  | "pintucaritas"
+  | "magia"
+  // Fotografía y video
+  | "fotografo"
+  | "videografo"
+  | "photobooth"
+  // Comida y bebida
   | "pastel"
+  | "mesa_dulces"
   | "pasabocas_ninos"
   | "picadas_adultos"
+  | "catering_completo"
+  | "bebidas"
+  | "bartender"
+  | "carrito_snacks"
+  | "helados_postres"
+  // Mobiliario y logística
   | "mobiliario"
-  | "fotografo"
-  | "souvenirs";
+  | "menaje"
+  | "inflables"
+  | "sonido"
+  | "iluminacion"
+  | "meseros"
+  | "transporte"
+  | "coordinador"
+  // Recuerdos y detalles
+  | "souvenirs"
+  | "pinata"
+  | "invitaciones";
 
 /** How a supplier prices their service */
 export type PricingModel = "flat" | "per_child" | "per_adult" | "per_person";
@@ -144,37 +174,149 @@ export interface SupplierApplicationFormData {
 // ─── Labels / display helpers ──────────────────────────────────────────────────
 
 export const SERVICE_LABELS: Record<ServiceType, string> = {
+  // Decoración
   decoracion: "Decoración",
+  flores: "Flores",
+  arco_globos: "Arco de globos",
+  // Entretenimiento
   recreacionista: "Recreacionista",
+  dj_musica: "DJ / Animación musical",
+  personaje_tematico: "Personaje temático",
+  show_infantil: "Show infantil",
+  pintucaritas: "Pintucaritas",
+  magia: "Magia",
+  // Fotografía y video
+  fotografo: "Fotógrafo",
+  videografo: "Videógrafo",
+  photobooth: "Cabina de fotos",
+  // Comida y bebida
   pastel: "Pastel",
+  mesa_dulces: "Mesa de dulces",
   pasabocas_ninos: "Pasabocas para niños",
   picadas_adultos: "Picadas para adultos",
+  catering_completo: "Catering completo",
+  bebidas: "Bebidas",
+  bartender: "Bartender",
+  carrito_snacks: "Carrito de snacks",
+  helados_postres: "Helados / Postres",
+  // Mobiliario y logística
   mobiliario: "Mobiliario",
-  fotografo: "Fotógrafo",
+  menaje: "Menaje",
+  inflables: "Inflables",
+  sonido: "Sonido",
+  iluminacion: "Iluminación",
+  meseros: "Meseros",
+  transporte: "Transporte",
+  coordinador: "Coordinador de evento",
+  // Recuerdos y detalles
   souvenirs: "Souvenirs",
+  pinata: "Piñata",
+  invitaciones: "Invitaciones",
 };
 
 export const SERVICE_ICONS: Record<ServiceType, string> = {
   decoracion: "🎈",
-  recreacionista: "🎪",
+  flores: "🌸",
+  arco_globos: "🎪",
+  recreacionista: "🤹",
+  dj_musica: "🎧",
+  personaje_tematico: "🦸",
+  show_infantil: "🎭",
+  pintucaritas: "🎨",
+  magia: "🪄",
+  fotografo: "📷",
+  videografo: "🎬",
+  photobooth: "🤳",
   pastel: "🎂",
+  mesa_dulces: "🍭",
   pasabocas_ninos: "🍿",
   picadas_adultos: "🧀",
+  catering_completo: "🍽️",
+  bebidas: "🥤",
+  bartender: "🍹",
+  carrito_snacks: "🛒",
+  helados_postres: "🍦",
   mobiliario: "🪑",
-  fotografo: "📷",
+  menaje: "🍴",
+  inflables: "🏰",
+  sonido: "🔊",
+  iluminacion: "💡",
+  meseros: "🤵",
+  transporte: "🚐",
+  coordinador: "📋",
   souvenirs: "🎁",
+  pinata: "🪅",
+  invitaciones: "✉️",
 };
 
 export const SERVICE_DESCRIPTIONS: Record<ServiceType, string> = {
-  decoracion: "Globos, centros de mesa, backdrop y ambientación",
-  recreacionista: "Show, juegos y animación para los niños",
+  decoracion: "Globos, centros de mesa, backdrop y ambientación completa",
+  flores: "Arreglos florales, coronas y centros con flores naturales",
+  arco_globos: "Arco o columna de globos personalizados para la entrada",
+  recreacionista: "Show, juegos y animación para niños (2-3 horas)",
+  dj_musica: "DJ, equipo de sonido y animación musical para adultos",
+  personaje_tematico: "Personaje disfrazado: Elmo, Bluey, Mickey, superhéroes...",
+  show_infantil: "Show de magia, circo o títeres para los pequeños",
+  pintucaritas: "Maquillaje artístico infantil y diseños faciales",
+  magia: "Show de magia profesional para niños y adultos",
+  fotografo: "Cobertura fotográfica profesional (3-5 horas)",
+  videografo: "Video profesional del evento con edición incluida",
+  photobooth: "Cabina fotográfica con props y álbum digital",
   pastel: "Torta personalizada para el evento",
+  mesa_dulces: "Mesa de postres: cupcakes, macarons, chocolates y más",
   pasabocas_ninos: "Snacks y bebidas para los niños (~$8.000/niño)",
   picadas_adultos: "Picadas y bebidas para adultos (~$17.000/adulto)",
+  catering_completo: "Menú completo: entrada, plato fuerte y postre",
+  bebidas: "Surtido de bebidas frías y calientes para el evento",
+  bartender: "Bartender con coctelería y bebidas para adultos",
+  carrito_snacks: "Carrito de crispetas, algodón de azúcar o snacks",
+  helados_postres: "Heladería o mesa de postres artesanales",
   mobiliario: "Sillas, mesas y manteles (~$9.000/persona)",
-  fotografo: "Cobertura fotográfica profesional del evento",
+  menaje: "Vajilla, copas, cubiertos y mantelería completa",
+  inflables: "Castillos, toboganes y juegos inflables para niños",
+  sonido: "Equipo de sonido profesional con micrófonos y parlantes",
+  iluminacion: "Luces LED, pistas de baile y efectos especiales",
+  meseros: "Servicio de meseros para atención a los invitados",
+  transporte: "Transporte de invitados o proveedores al lugar del evento",
+  coordinador: "Coordinador logístico el día del evento",
   souvenirs: "Recuerdos personalizados para los invitados (~$7.000/niño)",
+  pinata: "Piñata personalizada con dulces y rompimiento",
+  invitaciones: "Invitaciones digitales o físicas personalizadas",
 };
+
+// ─── Service groups for the picker UI ─────────────────────────────────────────
+
+export interface ServiceGroup {
+  label: string;
+  services: ServiceType[];
+}
+
+export const SERVICE_GROUPS: ServiceGroup[] = [
+  {
+    label: "Decoración",
+    services: ["decoracion", "flores", "arco_globos"],
+  },
+  {
+    label: "Entretenimiento",
+    services: ["recreacionista", "dj_musica", "personaje_tematico", "show_infantil", "pintucaritas", "magia"],
+  },
+  {
+    label: "Fotografía y video",
+    services: ["fotografo", "videografo", "photobooth"],
+  },
+  {
+    label: "Comida y bebida",
+    services: ["pastel", "mesa_dulces", "pasabocas_ninos", "picadas_adultos", "catering_completo", "bebidas", "bartender", "carrito_snacks", "helados_postres"],
+  },
+  {
+    label: "Mobiliario y logística",
+    services: ["mobiliario", "menaje", "inflables", "sonido", "iluminacion", "meseros", "transporte", "coordinador"],
+  },
+  {
+    label: "Recuerdos y detalles",
+    services: ["souvenirs", "pinata", "invitaciones"],
+  },
+];
 
 export const VENUE_LABELS: Record<VenueType, string> = {
   salon_social: "Salón social",
@@ -184,17 +326,62 @@ export const VENUE_LABELS: Record<VenueType, string> = {
   otro: "Otro",
 };
 
-export const EVENT_TYPES = [
-  "Cumpleaños infantil",
-  "Baby shower",
-  "Bautizo",
-  "Primera comunión",
-  "Reunión familiar",
-  "Grado",
-  "Quinceañera",
-  "Matrimonio íntimo",
-  "Otro",
+// ─── Event types with groups ───────────────────────────────────────────────────
+
+export interface EventTypeGroup {
+  label: string;
+  types: string[];
+}
+
+export const EVENT_TYPE_GROUPS: EventTypeGroup[] = [
+  {
+    label: "Infancia y familia",
+    types: [
+      "Cumpleaños infantil",
+      "Baby shower",
+      "Bautizo",
+      "Primera comunión",
+      "Revelación de género",
+    ],
+  },
+  {
+    label: "Jóvenes y adultos",
+    types: [
+      "Cumpleaños adulto",
+      "Quinceañera",
+      "Confirmación",
+      "Grado",
+      "Aniversario de pareja",
+      "Despedida de soltera",
+      "Despedida de soltero",
+    ],
+  },
+  {
+    label: "Reuniones y celebraciones",
+    types: [
+      "Reunión familiar",
+      "Matrimonio íntimo",
+      "Novena de aguinaldos",
+      "Fiesta de fin de año",
+      "Celebración por logro",
+    ],
+  },
+  {
+    label: "Corporativo",
+    types: [
+      "Reunión de equipo",
+      "Lanzamiento de producto",
+      "Cena empresarial",
+      "Celebración corporativa",
+    ],
+  },
+  {
+    label: "Otro",
+    types: ["Otro"],
+  },
 ];
+
+export const EVENT_TYPES = EVENT_TYPE_GROUPS.flatMap((g) => g.types);
 
 export const CITIES = [
   "Bogotá",

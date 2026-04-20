@@ -370,4 +370,380 @@ values
  '{decoracion,pastel}', 220000, 720000, 'flat', 0, 100,
  'Decoración y repostería para eventos en Manizales y Caldas. Especialidad en tortas de café colombiano y decoraciones con flores de colores cafeteros.',
  '@manizalescelebra', null, 5, 'approved', 4.5,
- '{manizales,cafe,flores,caldas}');
+ '{manizales,cafe,flores,caldas}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- FLORES
+-- ══════════════════════════════════════════════════════════════
+
+('Jardín de Eventos',
+ 'Catalina Flórez', 'cata@jardindeventos.co', '3101239001', 'Bogotá',
+ '{flores}', 180000, 700000, 'flat', 0, null,
+ 'Arreglos florales naturales para eventos: centros de mesa, coronas, guirnaldas y arcos de flores. Especialidad en peonías, rosas y girasoles. Entrega e instalación en Bogotá.',
+ '@jardindeventos', null, 6, 'approved', 4.8,
+ '{flores_naturales,centros_mesa,arcos,rosas}'),
+
+('Florería La Primavera',
+ 'Gloria Moreno', 'gloria@florerialaprimavera.co', '3201239002', 'Medellín',
+ '{flores}', 150000, 550000, 'flat', 0, null,
+ 'Diseño floral para bodas, bautizos y cumpleaños en Medellín. Flores de temporada y exóticas. Paquetes desde bouquets hasta decoración completa.',
+ '@laprimeraflores', null, 8, 'approved', 4.7,
+ '{bodas,bautizos,exoticas,temporada}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- ARCO DE GLOBOS
+-- ══════════════════════════════════════════════════════════════
+
+('ArcoBoom Globos',
+ 'Felipe Cárdenas', 'felipe@arcoboom.co', '3151239003', 'Bogotá',
+ '{arco_globos}', 120000, 380000, 'flat', 0, null,
+ 'Arcos y columnas de globos personalizados para entradas y fondos de eventos. Colores a elección, tamaños desde 1m hasta 4m. Armado en el lugar incluido en Bogotá.',
+ '@arcoboom', null, 4, 'approved', 4.6,
+ '{arcos,columnas,personalizado,infantil}'),
+
+('Globos Premium Cali',
+ 'Daniela Muñoz', 'dani@globospremium.co', '3061239004', 'Cali',
+ '{arco_globos,decoracion}', 150000, 450000, 'flat', 0, null,
+ 'Arcos orgánicos de globos y decoración con globos en Cali. Estilo boho, clásico y neón. Armado profesional e instalación incluida en el área metropolitana de Cali.',
+ '@globospremiucali', null, 3, 'approved', 4.5,
+ '{organico,boho,neon,cali}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- DJ / ANIMACIÓN MUSICAL
+-- ══════════════════════════════════════════════════════════════
+
+('DJ Fiestazo',
+ 'Andrés Bermúdez', 'andres@djfiestazo.co', '3111239005', 'Bogotá',
+ '{dj_musica}', 350000, 900000, 'flat', 0, null,
+ 'DJ profesional para todo tipo de eventos. Equipos de sonido Bose incluidos hasta 200 personas. Géneros: vallenato, salsa, pop, reggaeton, electrónica y música infantil.',
+ '@djfiestazo', null, 7, 'approved', 4.8,
+ '{dj,sonido,vallenato,salsa,reggaeton}'),
+
+('DJ Mix Eventos',
+ 'Camilo Escobar', 'cami@djmixeventos.co', '3201239006', 'Medellín',
+ '{dj_musica,sonido}', 300000, 750000, 'flat', 0, null,
+ 'DJ + equipo de sonido todo en uno para eventos en Medellín. Animación, karaoke y pistas de baile. Más de 300 eventos realizados en el área metropolitana.',
+ '@djmixeventos', null, 5, 'approved', 4.7,
+ '{dj,karaoke,animacion,medellin}'),
+
+('Ritmo y Fiesta Barranquilla',
+ 'Yesid Palomino', 'yesid@rytmofiesta.co', '3041239007', 'Barranquilla',
+ '{dj_musica}', 280000, 680000, 'flat', 0, null,
+ 'DJ costeño especialista en fiestas familiares y corporativas en Barranquilla. Sonido profesional, luces LED y animación incluida. Especialidad en cumbia, vallenato y champeta.',
+ '@rytmofiestabaq', null, 6, 'approved', 4.6,
+ '{dj,cumbia,vallenato,costeno}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- PERSONAJE TEMÁTICO
+-- ══════════════════════════════════════════════════════════════
+
+('Personajes Mágicos Colombia',
+ 'Lorena Santamaría', 'lorena@personajesmagicos.co', '3181239008', 'Bogotá',
+ '{personaje_tematico}', 250000, 550000, 'flat', 0, 80,
+ 'Personajes disfrazados para fiestas infantiles: Elmo, Peppa, Mickey, Bluey, Spiderman, Moana, Encanto y más. Show de 60 min con baile, fotos y juegos.',
+ '@personajesmagicoscol', null, 5, 'approved', 4.9,
+ '{elmo,peppa,mickey,bluey,spiderman,moana}'),
+
+('Superhéroes & Princesas',
+ 'Juliana Ospina', 'juli@superheroesprincesas.co', '3121239009', 'Medellín',
+ '{personaje_tematico,show_infantil}', 280000, 600000, 'flat', 0, 60,
+ 'Personajes y shows infantiles en Medellín: princesas Disney, superhéroes Marvel y DC, y villanos divertidos. Show interactivo de 90 minutos con sorpresas.',
+ '@superheroesprincesas', 'https://superheroesprincesas.co', 4, 'approved', 4.8,
+ '{disney,marvel,dc,princesas,superheroes}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- SHOW INFANTIL
+-- ══════════════════════════════════════════════════════════════
+
+('Circo Alegre Shows',
+ 'Mauricio Roa', 'mauri@circoalegre.co', '3161239010', 'Bogotá',
+ '{show_infantil}', 300000, 650000, 'flat', 0, 100,
+ 'Shows de circo para niños: malabares, trapecio bajo, acrobacia y payasada. 90 minutos de espectáculo. Disponible en Bogotá y Cundinamarca.',
+ '@circoalegreshows', null, 8, 'approved', 4.7,
+ '{circo,malabares,acrobacia,payasos}'),
+
+('Títeres y Maravillas',
+ 'Helena Nieto', 'helena@titeres.co', '3231239011', 'Bogotá',
+ '{show_infantil}', 200000, 420000, 'flat', 0, 50,
+ 'Teatro de títeres y cuentacuentos para niños de 2 a 8 años. Shows personalizados con el nombre y tema de la fiesta. Ideal para espacios pequeños y reuniones íntimas.',
+ '@titresymaravillas', null, 10, 'approved', 4.6,
+ '{titeres,cuentacuentos,teatro,pequeños}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- PINTUCARITAS
+-- ══════════════════════════════════════════════════════════════
+
+('Arte en Tu Cara',
+ 'Vanessa Torres', 'vane@arteentucara.co', '3101239012', 'Bogotá',
+ '{pintucaritas}', 150000, 380000, 'flat', 0, 40,
+ 'Maquillaje artístico facial para niños. Diseños de animales, superhéroes, princesas, flores y más. Hasta 40 niños por hora. Pigmentos hipoalergénicos certificados.',
+ '@arteentucara', null, 5, 'approved', 4.8,
+ '{maquillaje,artistico,hipoalergenico,infantil}'),
+
+('Colores Mágicos',
+ 'Sofía Alvarado', 'sofi@colormagico.co', '3051239013', 'Cali',
+ '{pintucaritas}', 120000, 300000, 'flat', 0, 35,
+ 'Pintucaritas profesional en Cali. Diseños temáticos para cumpleaños infantiles y eventos especiales. Materiales aptos para piel sensible. Hasta 35 niños por evento.',
+ '@coloresmagicoscali', null, 3, 'approved', 4.6,
+ '{cali,tematico,piel_sensible}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- MAGIA
+-- ══════════════════════════════════════════════════════════════
+
+('El Gran Mago Sebastián',
+ 'Sebastián Castro', 'seba@granmago.co', '3141239014', 'Bogotá',
+ '{magia}', 280000, 580000, 'flat', 0, 80,
+ 'Show de magia profesional de 60-90 minutos para niños y adultos. Trucos de ilusionismo, levitación y magia con palomas. Miembro de la Sociedad Colombiana de Magia.',
+ '@granmagoseb', null, 12, 'approved', 4.9,
+ '{magia,ilusionismo,palomas,profesional}'),
+
+('Abraca & Dabra',
+ 'Paula Ríos', 'paula@abracadabra.co', '3181239015', 'Medellín',
+ '{magia,show_infantil}', 220000, 480000, 'flat', 0, 60,
+ 'Maga interactiva con show de close-up, cartomagia y magia cómica para niños en Medellín. Show participativo donde los niños son los protagonistas del espectáculo.',
+ '@abracadabramag', null, 6, 'approved', 4.7,
+ '{close_up,cartomagia,comica,participativo}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- VIDEÓGRAFO
+-- ══════════════════════════════════════════════════════════════
+
+('Video Memorias',
+ 'Nicolás Suárez', 'nico@videomemorias.co', '3111239016', 'Bogotá',
+ '{videografo}', 320000, 850000, 'flat', 0, null,
+ 'Videografía profesional para eventos con edición cinematográfica. Video de 3-5 minutos + highlights de 60 segundos para redes sociales. Entrega en 10 días hábiles.',
+ '@videomemorias', 'https://videomemorias.co', 6, 'approved', 4.8,
+ '{cinematico,highlights,redes,edicion}'),
+
+('Frames & Feelings',
+ 'Carolina Bermúdez', 'caro@framesandfeelings.co', '3201239017', 'Bogotá',
+ '{videografo,fotografo}', 500000, 1400000, 'flat', 0, null,
+ 'Foto y video profesional en un mismo paquete. Video completo + galería de fotos editadas + reel para Instagram. Cobertura de hasta 6 horas. Entrega en álbum digital premium.',
+ '@framesandfeelings', 'https://framesandfeelings.co', 8, 'approved', 4.9,
+ '{foto,video,reel,album,premium}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- PHOTOBOOTH / CABINA DE FOTOS
+-- ══════════════════════════════════════════════════════════════
+
+('Snap! Photo Booth',
+ 'Alejandro Vélez', 'alejo@snapbooth.co', '3151239018', 'Bogotá',
+ '{photobooth}', 350000, 750000, 'flat', 0, null,
+ 'Cabina fotográfica con impresión instantánea, props temáticos y fondo personalizado. Illimitadas fotos durante el evento. Galería digital compartida por WhatsApp al final.',
+ '@snapboothco', 'https://snapbooth.co', 5, 'approved', 4.8,
+ '{impresion,props,digital,whatsapp}'),
+
+('Foto Fiesta Colombia',
+ 'Valentina Muñoz', 'vale@fotofiesta.co', '3041239019', 'Medellín',
+ '{photobooth}', 280000, 620000, 'flat', 0, null,
+ 'Photobooth con cámara profesional, ring light y props divertidos para eventos en Medellín. Marco personalizado con el nombre del evento y QR para descarga inmediata.',
+ '@fotofiestaCol', null, 4, 'approved', 4.6,
+ '{ring_light,props,qr,descarga}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- MESA DE DULCES
+-- ══════════════════════════════════════════════════════════════
+
+('Dulce Tentación',
+ 'María Alejandra Cruz', 'maria@dulcetentacion.co', '3101239020', 'Bogotá',
+ '{mesa_dulces}', 280000, 850000, 'flat', 0, null,
+ 'Mesa de dulces y postres temáticos: cupcakes, macarons, cake pops, chocolates artesanales y algodones. Ambientación con el tema del evento incluida. Bogotá y alrededores.',
+ '@dulcetentacion', null, 5, 'approved', 4.8,
+ '{cupcakes,macarons,chocolate,tematico}'),
+
+('Sweet Table Studio',
+ 'Isabela García', 'isa@sweettable.co', '3201239021', 'Medellín',
+ '{mesa_dulces,pastel}', 350000, 1000000, 'flat', 0, null,
+ 'Diseño completo de mesa de dulces más pastel coordinado. Cupcakes, cake pops, bombones y mesa decorada. Todo con el mismo estilo y paleta de colores.',
+ '@sweettablestudio', 'https://sweettable.co', 6, 'approved', 4.9,
+ '{diseño,coordinado,cupcakes,bombones}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- CATERING COMPLETO
+-- ══════════════════════════════════════════════════════════════
+
+('Banquetes El Fogón',
+ 'Roberto Carvajal', 'roberto@elfogon.co', '3171239022', 'Bogotá',
+ '{catering_completo}', 1200000, 4000000, 'per_person', 25000, 200,
+ 'Catering completo para eventos: entrada, sopa, plato fuerte colombiano y postre. Incluye personal de servicio, vajilla y menaje. Menús a medida según el evento.',
+ '@elfogoncatering', 'https://elfogon.co', 12, 'approved', 4.7,
+ '{completo,colombiano,servicio,vajilla}'),
+
+('Gourmet Events Catering',
+ 'Lucía Martínez', 'lucia@gourmetevents.co', '3121239023', 'Medellín',
+ '{catering_completo,meseros}', 1500000, 5000000, 'per_person', 30000, 150,
+ 'Catering gourmet con chef a domicilio. Menú de 3 tiempos personalizado, meseros uniformados y montaje de mesas incluido. Ideal para eventos de 30 a 150 personas.',
+ '@gourmeteventsmed', 'https://gourmetevents.co', 9, 'approved', 4.8,
+ '{chef,gourmet,meseros,personalizado}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- BEBIDAS
+-- ══════════════════════════════════════════════════════════════
+
+('Bebidas para Eventos',
+ 'Cristian López', 'cristian@bebidasparaeventos.co', '3141239024', 'Bogotá',
+ '{bebidas}', 200000, 800000, 'per_person', 8000, null,
+ 'Surtido de bebidas frías y calientes para eventos: jugos naturales, gaseosas, agua, café y aromáticas. Neveras y dispensadores incluidos. Servicio por persona.',
+ '@bebidasparaeventos', null, 5, 'approved', 4.5,
+ '{jugos,naturales,gaseosas,dispensadores}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- BARTENDER
+-- ══════════════════════════════════════════════════════════════
+
+('Cócteles Colombia',
+ 'Andrés Giraldo', 'andres@cocteles.co', '3101239025', 'Bogotá',
+ '{bartender}', 400000, 1200000, 'flat', 0, 120,
+ 'Bartender profesional con coctelería sin alcohol y con alcohol. Cócteles artesanales, sangría, mojitos y bebidas especiales. Barra completamente equipada. Hasta 120 personas.',
+ '@coctelesCol', null, 7, 'approved', 4.8,
+ '{bartender,cocteles,mojitos,sangria}'),
+
+('Bar Móvil Fiestas',
+ 'Diego Ramírez', 'diego@barmovil.co', '3181239026', 'Medellín',
+ '{bartender,bebidas}', 500000, 1500000, 'flat', 0, 150,
+ 'Bar móvil con bartender, bebidas incluidas y barra decorada para eventos en Medellín. Paquete todo incluido: licor, mixers, hielo, vasos y decoración de la barra.',
+ '@barmovilfiestas', null, 5, 'approved', 4.7,
+ '{bar_movil,todo_incluido,licor,barra}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- CARRITO DE SNACKS
+-- ══════════════════════════════════════════════════════════════
+
+('El Carrito Feliz',
+ 'Paola Ríos', 'paola@carritofeliz.co', '3061239027', 'Bogotá',
+ '{carrito_snacks}', 300000, 700000, 'flat', 0, 100,
+ 'Carrito de crispetas, algodón de azúcar y palomitas temáticas para eventos. Presentación decorada con el tema del evento. Operador incluido durante el evento.',
+ '@carritofeliz', null, 4, 'approved', 4.7,
+ '{crispetas,algodon,palomitas,tematico}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- HELADOS / POSTRES
+-- ══════════════════════════════════════════════════════════════
+
+('Helados Artesanales Nieve',
+ 'Juliana Herrera', 'juli@heladosnieve.co', '3201239028', 'Bogotá',
+ '{helados_postres}', 280000, 750000, 'flat', 0, 100,
+ 'Servicio de heladería artesanal para eventos. Más de 20 sabores incluidos Colombia, paletas de fruta y postres helados. Carrito con operador y materiales incluidos.',
+ '@heladosnieve', null, 5, 'approved', 4.8,
+ '{artesanal,paletas,fruta,sabores}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- MENAJE
+-- ══════════════════════════════════════════════════════════════
+
+('Menaje & Eventos',
+ 'Claudia Escobar', 'claudia@menajeventos.co', '3111239029', 'Bogotá',
+ '{menaje}', 200000, 800000, 'per_person', 5000, 300,
+ 'Alquiler de vajilla, copas, cubiertos y mantelería para eventos. Más de 20 diseños de vajilla disponibles. Entrega, instalación y recogida incluidos en Bogotá.',
+ '@menajeventos', null, 8, 'approved', 4.5,
+ '{vajilla,copas,cubiertos,manteleria}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- INFLABLES
+-- ══════════════════════════════════════════════════════════════
+
+('Inflables Divertidos',
+ 'Hernán Guerrero', 'hernan@inflablediver.co', '3141239030', 'Bogotá',
+ '{inflables}', 200000, 550000, 'flat', 0, 50,
+ 'Alquiler de castillos y toboganes inflables para fiestas infantiles en Bogotá. Instalación y vigilancia durante el evento incluidos. Limpieza y desinfección garantizada.',
+ '@inflablediver', null, 6, 'approved', 4.6,
+ '{castillo,tobogan,infantil,vigilancia}'),
+
+('Aventura Inflable Medellín',
+ 'Patricia Castillo', 'paty@aventurainflable.co', '3181239031', 'Medellín',
+ '{inflables}', 180000, 480000, 'flat', 0, 40,
+ 'Arriendo de inflables temáticos en Medellín: castillos, toboganes, piscinas de pelotas y obstáculos. Transporte e instalación incluida. Disponible fines de semana.',
+ '@aventurainflable', null, 4, 'approved', 4.5,
+ '{tematico,tobogan,piscina_pelotas,obstaculos}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- SONIDO
+-- ══════════════════════════════════════════════════════════════
+
+('Sonido Pro Eventos',
+ 'Mauricio Salcedo', 'mauri@sonidopro.co', '3101239032', 'Bogotá',
+ '{sonido}', 250000, 700000, 'flat', 0, 300,
+ 'Sistema de sonido profesional para eventos de 50 a 300 personas. Parlantes JBL, subwoofer, micrófonos inalámbricos y operador técnico incluidos. Bogotá y alrededores.',
+ '@sonidoproeventos', null, 9, 'approved', 4.7,
+ '{jbl,microfonos,inalambrico,tecnico}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- ILUMINACIÓN
+-- ══════════════════════════════════════════════════════════════
+
+('Luz & Ambiente',
+ 'Diego Morales', 'diego@luzambiente.co', '3151239033', 'Bogotá',
+ '{iluminacion}', 300000, 900000, 'flat', 0, 200,
+ 'Diseño de iluminación para eventos: luces LED de colores, pistas de baile iluminadas, proyectores y efectos especiales. Instalación y operación durante el evento incluidas.',
+ '@luzambiente', null, 7, 'approved', 4.8,
+ '{led,pista_baile,proyectores,efectos}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- MESEROS
+-- ══════════════════════════════════════════════════════════════
+
+('Servicio de Meseros Elite',
+ 'Sandra Moreno', 'sandra@meseroselite.co', '3201239034', 'Bogotá',
+ '{meseros}', 300000, 900000, 'per_person', 15000, null,
+ 'Meseros uniformados para eventos de 30 a 200 personas. Servicio de mesa, bandeja y coctelería. Supervisión incluida. Bogotá y área metropolitana. Precio por mesero/hora.',
+ '@meseroselite', null, 10, 'approved', 4.7,
+ '{uniformados,supervision,bandeja,coktail}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- TRANSPORTE
+-- ══════════════════════════════════════════════════════════════
+
+('Transporte Eventos Colombia',
+ 'Jhon Rojas', 'jhon@transporteeventos.co', '3121239035', 'Bogotá',
+ '{transporte}', 200000, 800000, 'flat', 0, 50,
+ 'Transporte de invitados y proveedores para eventos en Bogotá y municipios. Vans, microbuses y busetas disponibles. Conductores profesionales con seguro de pasajeros.',
+ '@transporteeventoscol', null, 6, 'approved', 4.5,
+ '{van,microbus,profesional,seguro}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- COORDINADOR
+-- ══════════════════════════════════════════════════════════════
+
+('Coordinación de Eventos Plus',
+ 'Marcela Rivera', 'marcela@coordeventos.co', '3161239036', 'Bogotá',
+ '{coordinador}', 400000, 1200000, 'flat', 0, null,
+ 'Coordinación logística integral el día del evento. Gestión de proveedores, línea de tiempo, montaje y desmontaje. Experiencia en más de 500 eventos en Colombia.',
+ '@coordeventosplus', 'https://coordeventos.co', 10, 'approved', 4.9,
+ '{coordinacion,logistica,timeline,500eventos}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- PIÑATA
+-- ══════════════════════════════════════════════════════════════
+
+('Piñatas Creativas',
+ 'Ángela Pedraza', 'angela@piñatascreativas.co', '3101239037', 'Bogotá',
+ '{pinata}', 60000, 200000, 'flat', 0, null,
+ 'Piñatas artesanales personalizadas para fiestas infantiles. Personajes: Elmo, Bluey, Peppa, Dinosaurios, Unicornio y más. Dulces incluidos en paquetes completos.',
+ '@pinatascreativas', null, 5, 'approved', 4.6,
+ '{artesanal,personalizado,dulces,infantil}'),
+
+('Fábrica de Piñatas Medellín',
+ 'Gustavo Arango', 'gus@fabricapinatas.co', '3201239038', 'Medellín',
+ '{pinata}', 50000, 170000, 'flat', 0, null,
+ 'Piñatas en cartón y tela de todo tipo de personajes. Envío a toda Colombia. Mínimo 3 días de anticipación. Dulces y confites a parte o en paquete.',
+ '@fabricapinatasMed', null, 8, 'approved', 4.5,
+ '{carton,tela,envio_colombia,economico}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- INVITACIONES
+-- ══════════════════════════════════════════════════════════════
+
+('Invita.co Studio',
+ 'Laura Sánchez', 'laura@invita.co', '3141239039', 'Bogotá',
+ '{invitaciones}', 50000, 250000, 'flat', 0, null,
+ 'Invitaciones digitales animadas y físicas personalizadas para todo tipo de evento. Video-invitación con música, RSVP digital y recordatorio automático incluido.',
+ '@invitaco', 'https://invita.co', 4, 'approved', 4.7,
+ '{digital,animada,rsvp,recordatorio}'),
+
+('Papelería & Diseño Eventos',
+ 'Valentina Pardo', 'valen@papeleriaeventos.co', '3181239040', 'Bogotá',
+ '{invitaciones}', 80000, 350000, 'flat', 0, null,
+ 'Invitaciones físicas impresas + digital para eventos. Diseños exclusivos en papel premium, laminado y con detalles dorados o plateados. Envío a toda Colombia.',
+ '@papeleriaeventos', null, 6, 'approved', 4.6,
+ '{fisicas,impresas,premium,dorado}');

@@ -17,7 +17,7 @@ export default async function CotizacionPage({ params }: PageProps) {
   // Guest quotes: data lives in sessionStorage, not the URL
   if (id.startsWith("guest_")) {
     return (
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="min-h-screen flex flex-col bg-gradient-subtle">
         <Navbar />
         <GuestQuoteLoader id={id} />
       </div>
@@ -48,7 +48,7 @@ export default async function CotizacionPage({ params }: PageProps) {
     .order("total_price_cop", { ascending: true });
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gradient-subtle">
       <Navbar />
       <QuoteResultsClient
         quoteRequest={quoteRequest as QuoteRequest}

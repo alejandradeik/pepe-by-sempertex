@@ -36,6 +36,7 @@ export interface GeneratedOption {
   items: GeneratedItem[];
   over_budget: boolean;
   budget_gap: number;         // positive = surplus, negative = deficit
+  unavailable_services: ServiceType[];  // requested but no approved supplier found
 }
 
 export interface QuoteInput {
@@ -163,6 +164,11 @@ export async function generateQuoteOptions(input: QuoteInput): Promise<Generated
     { type: "premium",    priceLevel: "high" },
   ];
 
+  // Compute which services have no supplier at all (same for all tiers)
+  const unavailable_services = input.services.filter(
+    (s) => (byService[s] ?? []).length === 0
+  ) as ServiceType[];
+
   const options: GeneratedOption[] = [];
 
   for (const tier of tiers) {
@@ -227,6 +233,7 @@ export async function generateQuoteOptions(input: QuoteInput): Promise<Generated
       items,
       over_budget,
       budget_gap,
+      unavailable_services,
     });
   }
 
