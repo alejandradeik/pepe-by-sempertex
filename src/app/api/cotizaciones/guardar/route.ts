@@ -18,10 +18,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Cuerpo de solicitud inválido." }, { status: 400 });
   }
 
-  const { quote_request_id, quote_option_id, option_data } = body as {
-    quote_request_id: string;
-    quote_option_id?: string;
-    option_data?: GeneratedOption;
+  const { quote_request_id, quote_option_id, option_data, quote_request_data } = body as {
+    quote_request_id:   string;
+    quote_option_id?:   string;
+    option_data?:       GeneratedOption;
+    /** Present for guest saves — real event data from sessionStorage */
+    quote_request_data?: Record<string, unknown>;
   };
 
   if (!quote_request_id) {
@@ -57,7 +59,7 @@ export async function POST(req: NextRequest) {
       console.error("[guardar] Path A — saved_quotes upsert error:", JSON.stringify(error));
       return NextResponse.json({ error: `Error al guardar: ${error.message}` }, { status: 500 });
     }
-    return NextResponse.json({ success: true, quote_option_id });
+    return NextResponse.json({ success: true, quote_option_id, quote_request_id });
   }
 
   // ── Path B: option lives in sessionStorage — persist it ──────────────────
@@ -67,18 +69,24 @@ export async function POST(req: NextRequest) {
 
   let resolvedRequestId = quote_request_id;
 
-  // Guest requests: create a real quote_request row first
+  // Guest requests: create a real quote_request row using the actual event
+  // data passed by the client (from sessionStorage), falling back to defaults.
   if (isGuestRequest) {
+    const rd = quote_request_data ?? {};
     const { data: newQr, error: newQrErr } = await supabase
       .from("quote_requests")
       .insert({
         customer_id:    user.id,
-        event_type:     "Evento guardado",
-        budget_cop:     option_data.total_price_cop,
-        city:           "Colombia",
-        venue_type:     "otro",
-        children_count: 0,
-        adult_count:    0,
+        event_type:     (rd.event_type  as string)  || "Evento",
+        event_theme:    (rd.event_theme as string)  || null,
+        honoree_age:    (rd.honoree_age as number)  || null,
+        budget_cop:     (rd.budget_cop  as number)  || option_data.total_price_cop,
+        city:           (rd.city        as string)  || "Colombia",
+        venue_type:     (rd.venue_type  as string)  || "otro",
+        children_count: (rd.children_count as number) || 0,
+        adult_count:    (rd.adult_count   as number) || 0,
+        event_date:     (rd.event_date  as string)  || null,
+        notes:          (rd.notes       as string)  || null,
       })
       .select("id")
       .single();
@@ -188,5 +196,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return NextResponse.json({ success: true, quote_option_id: resolvedOptionId });
+  return NextResponse.json({
+    success:          true,
+    quote_option_id:  resolvedOptionId,
+    quote_request_id: resolvedRequestId,
+  });
 }

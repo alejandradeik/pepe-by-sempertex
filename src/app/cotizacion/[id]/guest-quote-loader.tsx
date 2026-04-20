@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { QuoteResultsClient } from "./quote-results-client";
+import { createClient } from "@/lib/supabase/client";
 import type { GeneratedOption } from "@/lib/quote-generator";
 
 interface StoredGuest {
@@ -12,20 +13,26 @@ interface StoredGuest {
 }
 
 export function GuestQuoteLoader({ id }: { id: string }) {
-  const [data, setData]   = useState<StoredGuest | null>(null);
-  const [ready, setReady] = useState(false);
+  const [data, setData]              = useState<StoredGuest | null>(null);
+  const [ready, setReady]            = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem(id);
+    const supabase = createClient();
+
+    // Check auth and load sessionStorage in parallel
+    Promise.all([
+      supabase.auth.getUser(),
+      Promise.resolve(sessionStorage.getItem(id)),
+    ]).then(([{ data: { user } }, stored]) => {
+      setIsAuthenticated(!!user);
       if (stored) {
-        const parsed = JSON.parse(stored) as StoredGuest;
-        setData(parsed);
+        try {
+          setData(JSON.parse(stored) as StoredGuest);
+        } catch { /* ignore malformed */ }
       }
-    } catch {
-      // ignore malformed cache
-    }
-    setReady(true);
+      setReady(true);
+    });
   }, [id]);
 
   if (!ready) {
@@ -62,7 +69,7 @@ export function GuestQuoteLoader({ id }: { id: string }) {
       quoteRequest={data.request}
       options={data.options}
       quoteRequestId={id}
-      isGuest={true}
+      isGuest={!isAuthenticated}
     />
   );
 }

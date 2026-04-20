@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatCOP } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 import {
   SERVICE_LABELS,
   SERVICE_ICONS,
@@ -48,7 +49,6 @@ const TIER = {
     header:  "bg-emerald-50 border-emerald-100",
     badge:   "success" as const,
     item:    "bg-emerald-50 border-emerald-100",
-    cta:     "bg-emerald-600 hover:bg-emerald-700 text-white",
   },
   balanceada: {
     label: "Balanceada",
@@ -57,7 +57,6 @@ const TIER = {
     header:  "bg-brand-50 border-brand-100",
     badge:   "brand" as const,
     item:    "bg-brand-50 border-brand-100",
-    cta:     "",
     recommended: true,
   },
   premium: {
@@ -67,7 +66,6 @@ const TIER = {
     header:  "bg-amber-50 border-amber-100",
     badge:   "warning" as const,
     item:    "bg-amber-50 border-amber-100",
-    cta:     "bg-amber-500 hover:bg-amber-600 text-white",
   },
 } as const;
 
@@ -95,14 +93,14 @@ function getOptId(opt: DisplayOption): string | null {
 
 export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGuest }: Props) {
   const router = useRouter();
-  // Track saved by option_type (stable key) so both DB-id and in-memory options work
-  const [savedTypes, setSavedTypes] = useState<Set<string>>(new Set());
-  const [savingType, setSavingType] = useState<string | null>(null);
-  const [saveError, setSaveError] = useState<string | null>(null);
+
+  const [savedTypes,     setSavedTypes]     = useState<Set<string>>(new Set());
+  const [savingType,     setSavingType]     = useState<string | null>(null);
+  const [saveError,      setSaveError]      = useState<string | null>(null);
   const [guestNudgeType, setGuestNudgeType] = useState<string | null>(null);
   const [displayOptions, setDisplayOptions] = useState<DisplayOption[]>(options);
 
-  // Fall back to sessionStorage when DB returned no options (silent write failure)
+  // ── Fallback: load from sessionStorage when DB returned no options ────────
   useEffect(() => {
     if (options.length === 0 && quoteRequestId) {
       const stored = sessionStorage.getItem(quoteRequestId);
@@ -110,22 +108,56 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
         try {
           const { options: cached } = JSON.parse(stored) as { options: DisplayOption[] };
           if (Array.isArray(cached) && cached.length > 0) setDisplayOptions(cached);
-        } catch { /* ignore malformed cache */ }
+        } catch { /* ignore */ }
       }
     }
   }, [options.length, quoteRequestId]);
 
-  const req = quoteRequest as QuoteRequest;
-  const budget        = req.budget_cop ?? 0;
-  const city          = req.city ?? "";
-  const eventType     = req.event_type ?? "";
-  const eventTheme    = req.event_theme;
-  const childrenCount = req.children_count ?? 0;
-  const adultCount    = req.adult_count ?? 0;
-  const eventDate     = req.event_date;
-  const venueType     = req.venue_type;
+  // ── Pre-populate saved state on mount for authenticated users ─────────────
+  // Only runs for real UUID quote_requests (not guest_XXX), so the button
+  // shows "Guardada ✓" immediately when revisiting a previously saved quote.
+  useEffect(() => {
+    if (isGuest || !quoteRequestId || quoteRequestId.startsWith("guest_")) return;
 
-  // Collect services that couldn't be matched across all options (show once at bottom)
+    const supabase = createClient();
+
+    async function loadSavedState() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: savedRows } = await supabase
+        .from("saved_quotes")
+        .select("quote_option_id")
+        .eq("customer_id", user.id)
+        .eq("quote_request_id", quoteRequestId!);
+
+      if (!savedRows?.length) return;
+
+      const ids = (savedRows as { quote_option_id: string }[]).map((r) => r.quote_option_id);
+
+      const { data: savedOpts } = await supabase
+        .from("quote_options")
+        .select("option_type")
+        .in("id", ids);
+
+      if (savedOpts?.length) {
+        setSavedTypes(new Set((savedOpts as { option_type: string }[]).map((o) => o.option_type)));
+      }
+    }
+
+    loadSavedState();
+  }, [isGuest, quoteRequestId]);
+
+  const req            = quoteRequest as QuoteRequest;
+  const budget         = req.budget_cop ?? 0;
+  const city           = req.city ?? "";
+  const eventType      = req.event_type ?? "";
+  const eventTheme     = req.event_theme;
+  const childrenCount  = req.children_count ?? 0;
+  const adultCount     = req.adult_count ?? 0;
+  const eventDate      = req.event_date;
+  const venueType      = req.venue_type;
+
   const globalUnavailable: ServiceType[] = (() => {
     const first = displayOptions[0];
     if (!first) return [];
@@ -149,26 +181,52 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
     setSaveError(null);
 
     const optId = getOptId(opt);
+    const isGuestQuote = quoteRequestId.startsWith("guest_");
+
+    // For guest-originated quotes (user is now logged in but URL is still guest_XXX),
+    // include the full request data so the server can create a properly-populated
+    // quote_request row instead of a generic placeholder.
     const body = optId
       ? { quote_request_id: quoteRequestId, quote_option_id: optId }
-      : { quote_request_id: quoteRequestId, option_data: opt };
+      : {
+          quote_request_id:    quoteRequestId,
+          option_data:         opt,
+          ...(isGuestQuote ? { quote_request_data: quoteRequest } : {}),
+        };
 
-    const res = await fetch("/api/cotizaciones/guardar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    let data: Record<string, unknown> = {};
 
-    setSavingType(null);
+    try {
+      const res = await fetch("/api/cotizaciones/guardar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
-    if (res.ok) {
-      // Always mark by option_type so the button reflects the saved state
-      setSavedTypes((prev) => new Set([...prev, optType]));
-    } else if (res.status === 401) {
-      router.push("/login");
-    } else {
-      const d = await res.json().catch(() => ({}));
-      setSaveError(d.error ?? "Error al guardar. Intenta de nuevo.");
+      data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        if (res.status === 401) {
+          router.push(`/login?redirect=/cotizacion/${quoteRequestId}`);
+          return;
+        }
+        setSaveError((data.error as string) ?? "Error al guardar. Intenta de nuevo.");
+        return;
+      }
+    } catch {
+      setSaveError("Error de conexión. Verifica tu internet e intenta de nuevo.");
+      return;
+    } finally {
+      setSavingType(null);
+    }
+
+    setSavedTypes((prev) => new Set([...prev, optType]));
+
+    // If the server created a new quote_request for a guest save, navigate to
+    // the permanent URL so the user can bookmark it and see saved state on refresh.
+    const newRequestId = data.quote_request_id as string | undefined;
+    if (newRequestId && newRequestId !== quoteRequestId) {
+      router.replace(`/cotizacion/${newRequestId}`);
     }
   }
 
@@ -241,6 +299,12 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
       {saveError && (
         <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl mb-6 flex items-center gap-2">
           <AlertTriangle size={14} className="flex-shrink-0" /> {saveError}
+          <button
+            className="ml-auto text-red-400 hover:text-red-600"
+            onClick={() => setSaveError(null)}
+          >
+            ✕
+          </button>
         </div>
       )}
 
@@ -259,13 +323,13 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
           {displayOptions.map((opt) => {
-            const tier   = TIER[opt.option_type as TierKey] ?? TIER.balanceada;
-            const items  = getItems(opt);
-            const unavailable = getUnavailable(opt);
-            const pct    = Math.min(getBudgetPct(opt, budget), 150);
-            const over   = opt.total_price_cop > budget;
-            const isSaved   = savedTypes.has(opt.option_type);
-            const isSaving  = savingType === opt.option_type;
+            const tier          = TIER[opt.option_type as TierKey] ?? TIER.balanceada;
+            const items         = getItems(opt);
+            const unavailable   = getUnavailable(opt);
+            const pct           = Math.min(getBudgetPct(opt, budget), 150);
+            const over          = opt.total_price_cop > budget;
+            const isSaved       = savedTypes.has(opt.option_type);
+            const isSaving      = savingType === opt.option_type;
             const isRecommended = (tier as { recommended?: boolean }).recommended ?? false;
             const showGuestNudge = isGuest && guestNudgeType === opt.option_type;
 
@@ -335,7 +399,7 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
                 {/* Items */}
                 <div className="px-6 py-4 flex flex-col gap-2.5 flex-1">
                   {items.map((item, idx) => {
-                    const sup = "supplier" in item ? item.supplier : null;
+                    const sup         = "supplier" in item ? item.supplier : null;
                     const pricingNote = "pricing_note" in item ? (item.pricing_note as string | null) : null;
                     return (
                       <div key={idx} className={cn("rounded-xl border p-3", tier.item)}>
@@ -392,7 +456,7 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
                     );
                   })}
 
-                  {/* Unavailable services for this option */}
+                  {/* Unavailable services */}
                   {unavailable.length > 0 && (
                     <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-3">
                       <div className="flex items-start gap-2">
@@ -414,7 +478,7 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
                   )}
                 </div>
 
-                {/* Guest save nudge — per card */}
+                {/* Guest save nudge */}
                 {showGuestNudge && (
                   <div className="mx-6 mb-3 bg-brand-50 border border-brand-200 rounded-xl px-4 py-3 flex items-start gap-2">
                     <Info size={13} className="text-brand-500 flex-shrink-0 mt-0.5" />
@@ -454,20 +518,38 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
                     Contactar proveedores
                   </Button>
 
-                  <Button
-                    variant={isSaved ? "secondary" : "outline"}
-                    size="sm"
+                  <button
                     className={cn(
-                      "w-full transition-all",
-                      isSaved && "border-0 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                      "w-full inline-flex items-center justify-center gap-2 text-sm font-semibold rounded-xl border-2 px-3 py-1.5 transition-all duration-200",
+                      isSaved
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-700 cursor-default"
+                        : isSaving
+                        ? "border-brand-200 bg-brand-50 text-brand-600 cursor-wait"
+                        : "border-brand-500 text-brand-600 hover:bg-brand-50 active:scale-[0.98]"
                     )}
-                    loading={isSaving}
-                    disabled={isSaved}
+                    disabled={isSaved || isSaving}
                     onClick={() => handleSave(opt)}
                   >
-                    {isSaved ? <BookmarkCheck size={13} /> : <Bookmark size={13} />}
-                    {isSaved ? "Guardada ✓" : "Guardar cotización"}
-                  </Button>
+                    {isSaving ? (
+                      <>
+                        <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        Guardando…
+                      </>
+                    ) : isSaved ? (
+                      <>
+                        <BookmarkCheck size={14} />
+                        Guardada ✓
+                      </>
+                    ) : (
+                      <>
+                        <Bookmark size={14} />
+                        Guardar cotización
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             );
@@ -492,7 +574,7 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
                 ))}
               </div>
               <p className="text-xs text-gray-400 leading-relaxed">
-                Estamos creciendo nuestra red de proveedores. Estos servicios no están disponibles aún en tu ciudad.{" "}
+                Estamos creciendo nuestra red de proveedores.{" "}
                 <Link href="/cotizar" className="text-brand-500 hover:text-brand-700 font-medium">
                   Vuelve a cotizar
                 </Link>{" "}
