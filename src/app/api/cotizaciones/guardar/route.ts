@@ -4,16 +4,20 @@ import type { GeneratedOption } from "@/lib/quote-generator";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
     return NextResponse.json(
       { error: "Debes iniciar sesión para guardar cotizaciones." },
       { status: 401 }
     );
   }
 
-  const body = await req.json();
+  const body = await req.json().catch(() => null);
+  if (!body) {
+    return NextResponse.json({ error: "Cuerpo de solicitud inválido." }, { status: 400 });
+  }
+
   const { quote_request_id, quote_option_id, option_data } = body as {
     quote_request_id: string;
     quote_option_id?: string;
@@ -24,11 +28,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Falta el ID de la solicitud." }, { status: 400 });
   }
 
-  // Validate that this quote_request belongs to the authenticated user.
-  // For guest IDs (prefix "guest_"), we skip DB ownership check since the
-  // request was never persisted — option_data path will create it implicitly.
   const isGuestRequest = quote_request_id.startsWith("guest_");
 
+  // Validate ownership for persisted quote_requests
   if (!isGuestRequest) {
     const { data: qr, error: qrErr } = await supabase
       .from("quote_requests")
@@ -37,35 +39,35 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (qrErr || !qr) {
+      console.error("[guardar] quote_request lookup failed:", JSON.stringify(qrErr));
       return NextResponse.json({ error: "Solicitud no encontrada." }, { status: 404 });
     }
-
     if (qr.customer_id !== user.id) {
-      return NextResponse.json({ error: "No tienes permiso para guardar esta cotización." }, { status: 403 });
+      return NextResponse.json({ error: "Sin permiso para guardar esta cotización." }, { status: 403 });
     }
   }
 
-  // ── Path A: option already in DB ─────────────────────────────────────────
+  // ── Path A: the client already knows the DB id of the option ─────────────
   if (quote_option_id) {
     const { error } = await supabase.from("saved_quotes").upsert(
       { customer_id: user.id, quote_request_id, quote_option_id },
       { onConflict: "customer_id,quote_option_id" }
     );
     if (error) {
-      console.error("[guardar] upsert saved_quotes error:", error);
-      return NextResponse.json({ error: "Error al guardar." }, { status: 500 });
+      console.error("[guardar] Path A — saved_quotes upsert error:", JSON.stringify(error));
+      return NextResponse.json({ error: `Error al guardar: ${error.message}` }, { status: 500 });
     }
     return NextResponse.json({ success: true, quote_option_id });
   }
 
-  // ── Path B: option lives only in sessionStorage — persist the whole thing ──
+  // ── Path B: option lives in sessionStorage — persist it ──────────────────
   if (!option_data) {
     return NextResponse.json({ error: "Faltan los datos de la cotización." }, { status: 400 });
   }
 
-  // For guest requests we must first create the quote_request row
   let resolvedRequestId = quote_request_id;
 
+  // Guest requests: create a real quote_request row first
   if (isGuestRequest) {
     const { data: newQr, error: newQrErr } = await supabase
       .from("quote_requests")
@@ -73,7 +75,7 @@ export async function POST(req: NextRequest) {
         customer_id:    user.id,
         event_type:     "Evento guardado",
         budget_cop:     option_data.total_price_cop,
-        city:           "—",
+        city:           "Colombia",
         venue_type:     "otro",
         children_count: 0,
         adult_count:    0,
@@ -82,42 +84,90 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (newQrErr || !newQr) {
-      console.error("[guardar] insert guest quote_request error:", newQrErr);
-      return NextResponse.json({ error: "Error al crear la solicitud." }, { status: 500 });
+      console.error("[guardar] guest insert quote_request error:", JSON.stringify(newQrErr));
+      return NextResponse.json(
+        { error: `Error al crear la solicitud: ${newQrErr?.message ?? "desconocido"}` },
+        { status: 500 }
+      );
     }
     resolvedRequestId = newQr.id;
   }
 
-  // Insert the option row
-  const { data: insertedOption, error: optErr } = await supabase
-    .from("quote_options")
-    .insert({
-      quote_request_id: resolvedRequestId,
-      option_type:      option_data.option_type,
-      total_price_cop:  option_data.total_price_cop,
-      summary:          option_data.summary,
-      fit_explanation:  option_data.fit_explanation,
-    })
-    .select("id")
-    .single();
+  // For non-guest requests: the option may already be in DB (written by /api/cotizaciones
+  // but not surfaced to the client because of a silent insert+select RLS edge case).
+  // Check first to avoid duplicates.
+  let resolvedOptionId: string | null = null;
 
-  if (optErr || !insertedOption) {
-    console.error("[guardar] insert quote_option error:", optErr);
-    return NextResponse.json({ error: "Error al guardar la cotización." }, { status: 500 });
+  if (!isGuestRequest) {
+    const { data: existing } = await supabase
+      .from("quote_options")
+      .select("id")
+      .eq("quote_request_id", resolvedRequestId)
+      .eq("option_type", option_data.option_type)
+      .limit(1)
+      .maybeSingle();
+
+    if (existing) {
+      resolvedOptionId = existing.id;
+    }
   }
 
-  // Insert items
-  if (option_data.items?.length) {
-    const itemRows = option_data.items.map((item) => ({
-      quote_option_id:     insertedOption.id,
-      supplier_profile_id: item.supplier_profile_id,
-      service_type:        item.service_type,
-      item_name:           item.item_name,
-      estimated_price_cop: item.estimated_price_cop,
-      notes:               item.notes ?? null,
-    }));
-    const { error: itemsErr } = await supabase.from("quote_option_items").insert(itemRows);
-    if (itemsErr) console.error("[guardar] insert items error:", itemsErr);
+  // Only insert if we don't already have an id
+  if (!resolvedOptionId) {
+    // Step 1: insert (without combined select, to avoid insert+select RLS timing issues)
+    const { error: optInsertErr } = await supabase
+      .from("quote_options")
+      .insert({
+        quote_request_id: resolvedRequestId,
+        option_type:      option_data.option_type,
+        total_price_cop:  option_data.total_price_cop,
+        summary:          option_data.summary,
+        fit_explanation:  option_data.fit_explanation,
+      });
+
+    if (optInsertErr) {
+      console.error("[guardar] quote_options insert error:", JSON.stringify(optInsertErr));
+      return NextResponse.json(
+        { error: `Error al guardar la cotización: ${optInsertErr.message}` },
+        { status: 500 }
+      );
+    }
+
+    // Step 2: fetch back the id via a clean SELECT (separate request — no RLS race)
+    const { data: fetched, error: fetchErr } = await supabase
+      .from("quote_options")
+      .select("id")
+      .eq("quote_request_id", resolvedRequestId)
+      .eq("option_type", option_data.option_type)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (fetchErr || !fetched) {
+      console.error("[guardar] quote_options re-fetch error:", JSON.stringify(fetchErr));
+      return NextResponse.json(
+        { error: `Error al recuperar cotización guardada: ${fetchErr?.message ?? "sin datos"}` },
+        { status: 500 }
+      );
+    }
+
+    resolvedOptionId = fetched.id;
+
+    // Insert items (non-fatal if partial failure)
+    if (option_data.items?.length) {
+      const itemRows = option_data.items.map((item) => ({
+        quote_option_id:     resolvedOptionId!,
+        supplier_profile_id: item.supplier_profile_id,
+        service_type:        item.service_type,
+        item_name:           item.item_name,
+        estimated_price_cop: item.estimated_price_cop,
+        notes:               item.notes ?? null,
+      }));
+      const { error: itemsErr } = await supabase.from("quote_option_items").insert(itemRows);
+      if (itemsErr) {
+        console.error("[guardar] quote_option_items insert error:", JSON.stringify(itemsErr));
+      }
+    }
   }
 
   // Upsert saved_quotes
@@ -125,15 +175,18 @@ export async function POST(req: NextRequest) {
     {
       customer_id:      user.id,
       quote_request_id: resolvedRequestId,
-      quote_option_id:  insertedOption.id,
+      quote_option_id:  resolvedOptionId!,
     },
     { onConflict: "customer_id,quote_option_id" }
   );
 
   if (saveErr) {
-    console.error("[guardar] upsert saved_quotes error:", saveErr);
-    return NextResponse.json({ error: "Error al guardar." }, { status: 500 });
+    console.error("[guardar] saved_quotes upsert error:", JSON.stringify(saveErr));
+    return NextResponse.json(
+      { error: `Error al guardar: ${saveErr.message}` },
+      { status: 500 }
+    );
   }
 
-  return NextResponse.json({ success: true, quote_option_id: insertedOption.id });
+  return NextResponse.json({ success: true, quote_option_id: resolvedOptionId });
 }

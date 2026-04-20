@@ -3,10 +3,36 @@
 export type UserRole = "customer" | "supplier" | "admin";
 
 export type VenueType =
+  // Salones
   | "salon_social"
+  | "salon_eventos"
+  | "salon_comunal"
+  | "auditorio"
+  // Propiedades privadas
   | "casa"
+  | "casa_quinta"
   | "finca"
+  | "hacienda"
+  // Establecimientos
   | "restaurante"
+  | "restaurante_privado"
+  | "hotel"
+  | "club"
+  // Aire libre
+  | "terraza"
+  | "rooftop"
+  | "jardin"
+  | "parque"
+  | "playa"
+  | "exterior"
+  // Corporativo / educativo
+  | "colegio"
+  | "oficina"
+  | "centro_convenciones"
+  // Otros
+  | "iglesia"
+  | "espacio_alquilado"
+  | "local_comercial"
   | "otro";
 
 export type ServiceType =
@@ -345,12 +371,64 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
 ];
 
 export const VENUE_LABELS: Record<VenueType, string> = {
-  salon_social: "Salón social",
-  casa: "Casa",
-  finca: "Finca",
-  restaurante: "Restaurante",
-  otro: "Otro",
+  salon_social:       "Salón social",
+  salon_eventos:      "Salón de eventos",
+  salon_comunal:      "Salón comunal",
+  auditorio:          "Auditorio",
+  casa:               "Casa",
+  casa_quinta:        "Casa quinta",
+  finca:              "Finca",
+  hacienda:           "Hacienda",
+  restaurante:        "Restaurante",
+  restaurante_privado:"Restaurante privado",
+  hotel:              "Hotel",
+  club:               "Club / Clubhouse",
+  terraza:            "Terraza",
+  rooftop:            "Rooftop",
+  jardin:             "Jardín",
+  parque:             "Parque",
+  playa:              "Playa",
+  exterior:           "Exterior al aire libre",
+  colegio:            "Colegio / Jardín infantil",
+  oficina:            "Oficina / Espacio corporativo",
+  centro_convenciones:"Centro de convenciones",
+  iglesia:            "Iglesia / Salón parroquial",
+  espacio_alquilado:  "Espacio alquilado",
+  local_comercial:    "Local comercial",
+  otro:               "Otro",
 };
+
+export interface VenueTypeGroup {
+  label: string;
+  types: VenueType[];
+}
+
+export const VENUE_TYPE_GROUPS: VenueTypeGroup[] = [
+  {
+    label: "Salones y recintos",
+    types: ["salon_social", "salon_eventos", "salon_comunal", "auditorio"],
+  },
+  {
+    label: "Propiedades privadas",
+    types: ["casa", "casa_quinta", "finca", "hacienda"],
+  },
+  {
+    label: "Establecimientos",
+    types: ["restaurante", "restaurante_privado", "hotel", "club"],
+  },
+  {
+    label: "Espacios al aire libre",
+    types: ["terraza", "rooftop", "jardin", "parque", "playa", "exterior"],
+  },
+  {
+    label: "Corporativo y educativo",
+    types: ["colegio", "oficina", "centro_convenciones"],
+  },
+  {
+    label: "Otros espacios",
+    types: ["iglesia", "espacio_alquilado", "local_comercial", "otro"],
+  },
+];
 
 // ─── Event types with groups ───────────────────────────────────────────────────
 

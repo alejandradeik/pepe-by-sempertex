@@ -199,7 +199,7 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
               </span>
               {venueType && (
                 <span className="flex items-center gap-1.5">
-                  🏠 {VENUE_LABELS[venueType as keyof typeof VENUE_LABELS]}
+                  🏠 {VENUE_LABELS[venueType as keyof typeof VENUE_LABELS] ?? venueType}
                 </span>
               )}
               <span className="flex items-center gap-1.5">
@@ -227,7 +227,12 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
         <div className="bg-gradient-to-r from-brand-50 to-violet-50 border border-brand-100 rounded-2xl px-5 py-4 mb-6 flex items-center gap-3">
           <Star size={15} className="text-brand-500 flex-shrink-0" />
           <p className="text-sm text-brand-700">
-            <Link href="/registro" className="font-bold underline underline-offset-2">Crea una cuenta gratis</Link>
+            <Link
+              href={`/registro?redirect=/cotizacion/${quoteRequestId}`}
+              className="font-bold underline underline-offset-2"
+            >
+              Crea una cuenta gratis
+            </Link>
             {" "}para guardar estas opciones y acceder a ellas desde cualquier dispositivo.
           </p>
         </div>
@@ -415,9 +420,19 @@ export function QuoteResultsClient({ quoteRequest, options, quoteRequestId, isGu
                     <Info size={13} className="text-brand-500 flex-shrink-0 mt-0.5" />
                     <p className="text-xs text-brand-700 leading-relaxed">
                       Para guardar esta cotización{" "}
-                      <Link href="/registro" className="font-bold underline underline-offset-2">crea una cuenta gratis</Link>
+                      <Link
+                        href={`/registro?redirect=/cotizacion/${quoteRequestId}`}
+                        className="font-bold underline underline-offset-2"
+                      >
+                        crea una cuenta gratis
+                      </Link>
                       {" "}o{" "}
-                      <Link href="/login" className="font-bold underline underline-offset-2">inicia sesión</Link>.
+                      <Link
+                        href={`/login?redirect=/cotizacion/${quoteRequestId}`}
+                        className="font-bold underline underline-offset-2"
+                      >
+                        inicia sesión
+                      </Link>.
                     </p>
                   </div>
                 )}

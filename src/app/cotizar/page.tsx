@@ -15,6 +15,7 @@ import {
   SERVICE_DESCRIPTIONS,
   SERVICE_GROUPS,
   VENUE_LABELS,
+  VENUE_TYPE_GROUPS,
   EVENT_TYPE_GROUPS,
   CITIES,
   type ServiceType,
@@ -24,8 +25,6 @@ import { cn, formatCOP } from "@/lib/utils";
 import { ArrowLeft, ArrowRight, CheckCircle, Sparkles, X } from "lucide-react";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-
-const ALL_VENUES = Object.entries(VENUE_LABELS) as [VenueType, string][];
 
 const STEPS = [
   { id: 1, label: "Evento",    optional: false },
@@ -369,7 +368,13 @@ export default function CotizarPage() {
 
                 <Select label="Tipo de lugar *" value={venueType} onChange={(e) => setVenueType(e.target.value as VenueType)}>
                   <option value="">Selecciona el tipo de lugar</option>
-                  {ALL_VENUES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                  {VENUE_TYPE_GROUPS.map((group) => (
+                    <optgroup key={group.label} label={group.label}>
+                      {group.types.map((v) => (
+                        <option key={v} value={v}>{VENUE_LABELS[v]}</option>
+                      ))}
+                    </optgroup>
+                  ))}
                 </Select>
               </div>
 

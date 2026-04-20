@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
         .single();
 
       if (optError || !savedOption) {
-        console.error("[cotizaciones] quote_options insert failed:", optError);
+        console.error("[cotizaciones] quote_options insert failed:", JSON.stringify(optError));
         continue;
       }
 
@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
           .from("quote_option_items")
           .insert(itemRows);
         if (itemsError) {
-          console.error("[cotizaciones] quote_option_items insert failed:", itemsError);
+          console.error("[cotizaciones] quote_option_items insert failed:", JSON.stringify(itemsError));
         }
       }
     }

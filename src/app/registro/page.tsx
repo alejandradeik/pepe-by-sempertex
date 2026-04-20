@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,8 @@ import { CheckCircle } from "lucide-react";
 
 export default function RegistroPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") ?? "/cotizar";
   const supabase = createClient();
 
   const [fullName, setFullName] = useState("");
@@ -51,9 +53,9 @@ export default function RegistroPage() {
     setSuccess(true);
     setLoading(false);
 
-    // Give Supabase a moment to trigger the profile creation, then redirect
+    // Give Supabase a moment to trigger the profile creation trigger, then redirect
     setTimeout(() => {
-      router.push("/cotizar");
+      router.push(redirectTo);
       router.refresh();
     }, 1500);
   }
@@ -135,7 +137,10 @@ export default function RegistroPage() {
 
             <p className="text-center text-sm text-gray-500 mt-6">
               ¿Ya tienes cuenta?{" "}
-              <Link href="/login" className="text-brand-600 font-semibold hover:underline">
+              <Link
+                href={redirectTo !== "/cotizar" ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"}
+                className="text-brand-600 font-semibold hover:underline"
+              >
                 Inicia sesión
               </Link>
             </p>

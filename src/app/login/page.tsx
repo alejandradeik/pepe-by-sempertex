@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,8 @@ import { Navbar } from "@/components/layout/navbar";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") ?? "/dashboard";
   const supabase = createClient();
 
   const [email, setEmail] = useState("");
@@ -32,7 +34,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/dashboard");
+    router.push(redirectTo);
     router.refresh();
   }
 
@@ -84,7 +86,10 @@ export default function LoginPage() {
 
             <p className="text-center text-sm text-gray-500 mt-6">
               ¿No tienes cuenta?{" "}
-              <Link href="/registro" className="text-brand-600 font-semibold hover:underline">
+              <Link
+                href={redirectTo !== "/dashboard" ? `/registro?redirect=${encodeURIComponent(redirectTo)}` : "/registro"}
+                className="text-brand-600 font-semibold hover:underline"
+              >
                 Regístrate gratis
               </Link>
             </p>
