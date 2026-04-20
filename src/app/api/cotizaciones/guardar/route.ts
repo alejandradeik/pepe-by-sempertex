@@ -122,10 +122,11 @@ export async function POST(req: NextRequest) {
 
   // Only insert if we don't already have an id
   if (!resolvedOptionId) {
-    // Step 1: insert (without combined select, to avoid insert+select RLS timing issues)
+    // Step 1: insert with customer_id (simple RLS: customer_id = auth.uid())
     const { error: optInsertErr } = await supabase
       .from("quote_options")
       .insert({
+        customer_id:      user.id,
         quote_request_id: resolvedRequestId,
         option_type:      option_data.option_type,
         total_price_cop:  option_data.total_price_cop,

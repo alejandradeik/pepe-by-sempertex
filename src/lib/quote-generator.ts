@@ -43,6 +43,7 @@ export interface GeneratedItem {
 }
 
 export interface GeneratedOption {
+  id?: string;                // DB uuid — set after persistence, absent for guest/in-memory options
   option_type: QuoteOptionType;
   total_price_cop: number;
   summary: string;

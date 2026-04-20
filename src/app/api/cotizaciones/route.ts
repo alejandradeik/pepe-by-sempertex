@@ -110,52 +110,67 @@ export async function POST(req: NextRequest) {
       event_theme,
     });
 
-    // 4. Persist options and their items
+    // 4. Persist options and their items; collect DB ids to return to client
+    const optionsWithIds: typeof generatedOptions = [];
+
     for (const opt of generatedOptions) {
-      const { data: savedOption, error: optError } = await supabase
+      // Step 4a: insert without RETURNING to avoid combined insert+select RLS timing issues.
+      const { error: optError } = await supabase
         .from("quote_options")
         .insert({
+          customer_id:      customerId,
           quote_request_id: quoteRequest.id,
-          option_type: opt.option_type,
-          total_price_cop: opt.total_price_cop,
-          summary: opt.summary,
-          fit_explanation: opt.fit_explanation,
-        })
-        .select()
-        .single();
+          option_type:      opt.option_type,
+          total_price_cop:  opt.total_price_cop,
+          summary:          opt.summary,
+          fit_explanation:  opt.fit_explanation,
+        });
 
-      if (optError || !savedOption) {
-        console.error("[cotizaciones] quote_options insert failed:", JSON.stringify(optError));
+      if (optError) {
+        console.error("[cotizaciones] quote_options insert error:", JSON.stringify(optError));
+        optionsWithIds.push(opt);
         continue;
       }
 
-      const itemRows = opt.items.map((item) => {
-        const noteParts = [item.pricing_note, item.notes].filter(Boolean);
-        return {
-          quote_option_id: savedOption.id,
-          supplier_profile_id: item.supplier_profile_id,
-          service_type: item.service_type,
-          item_name: item.item_name,
-          estimated_price_cop: item.estimated_price_cop,
-          notes: noteParts.length > 0 ? noteParts.join(" · ") : null,
-        };
-      });
+      // Step 4b: fetch the id back in a clean separate SELECT.
+      const { data: savedOption } = await supabase
+        .from("quote_options")
+        .select("id")
+        .eq("quote_request_id", quoteRequest.id)
+        .eq("option_type", opt.option_type)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-      if (itemRows.length > 0) {
+      const optionId = savedOption?.id ?? null;
+      optionsWithIds.push({ ...opt, id: optionId ?? undefined });
+
+      if (optionId && opt.items.length > 0) {
+        const itemRows = opt.items.map((item) => {
+          const noteParts = [item.pricing_note, item.notes].filter(Boolean);
+          return {
+            quote_option_id:     optionId,
+            supplier_profile_id: item.supplier_profile_id,
+            service_type:        item.service_type,
+            item_name:           item.item_name,
+            estimated_price_cop: item.estimated_price_cop,
+            notes: noteParts.length > 0 ? noteParts.join(" · ") : null,
+          };
+        });
         const { error: itemsError } = await supabase
           .from("quote_option_items")
           .insert(itemRows);
         if (itemsError) {
-          console.error("[cotizaciones] quote_option_items insert failed:", JSON.stringify(itemsError));
+          console.error("[cotizaciones] quote_option_items insert error:", JSON.stringify(itemsError));
         }
       }
     }
 
-    // Always return generated options so the client can display them immediately,
-    // even if the DB writes above failed silently.
+    // Return options with DB ids so the client can use Path A (direct saved_quotes upsert)
+    // when saving — no need to re-insert into quote_options from the guardar route.
     return NextResponse.json({
       quote_request_id: quoteRequest.id,
-      options: generatedOptions,
+      options: optionsWithIds,
     });
   } catch (err) {
     console.error(err);

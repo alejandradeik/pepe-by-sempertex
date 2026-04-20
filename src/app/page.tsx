@@ -192,7 +192,8 @@ export default function HomePage() {
             <Link href="/cotizar">
               <Button
                 size="lg"
-                className="bg-white text-brand-700 hover:bg-white/90 shadow-card-lg font-bold w-full sm:w-auto group"
+                variant="white"
+                className="font-bold w-full sm:w-auto group"
               >
                 Cotiza tu evento gratis
                 <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
