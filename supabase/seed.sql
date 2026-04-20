@@ -747,3 +747,937 @@ values
  'Invitaciones físicas impresas + digital para eventos. Diseños exclusivos en papel premium, laminado y con detalles dorados o plateados. Envío a toda Colombia.',
  '@papeleriaeventos', null, 6, 'approved', 4.6,
  '{fisicas,impresas,premium,dorado}');
+
+-- ============================================================
+-- SEED v3 — Cobertura completa por ciudad y categoría
+-- ============================================================
+-- Este bloque completa las combinaciones ciudad+servicio faltantes
+-- para que el cotizador nunca devuelva "Sin proveedor disponible".
+--
+-- Ciudades cubiertas: Bogotá, Medellín, Cali, Barranquilla,
+--   Cartagena, Bucaramanga, Pereira, Manizales
+-- Categorías nuevas: recordatorios_digitales, detalles_mesa,
+--   algodon_azucar, seguridad, limpieza
+-- ============================================================
+
+insert into public.supplier_profiles
+  (business_name, contact_name, email, phone, city,
+   service_categories, price_range_min, price_range_max,
+   pricing_model, price_per_unit, max_capacity,
+   description, instagram_url, website_url, years_experience,
+   status, rating, tags)
+values
+
+-- ══════════════════════════════════════════════════════════════
+-- NUEVOS TIPOS: recordatorios_digitales
+-- ══════════════════════════════════════════════════════════════
+
+('RecuérdaMe Digital',
+ 'Paola Suárez', 'paola@recuerdame.co', '3001240001', 'Bogotá',
+ '{recordatorios_digitales,invitaciones}', 40000, 180000, 'flat', 0, null,
+ 'Recordatorios digitales animados para WhatsApp: cuenta regresiva del evento, datos de acceso y mapa. Entrega en 24h. Personalización total con fotos y colores del evento.',
+ '@recuerdamedigital', null, 3, 'approved', 4.7,
+ '{digital,whatsapp,animado,recordatorio}'),
+
+('AnimaEvent Studio',
+ 'Sebastián Rojas', 'seba@animaevent.co', '3001240002', 'Bogotá',
+ '{recordatorios_digitales}', 35000, 150000, 'flat', 0, null,
+ 'Studio de motion graphics para eventos: invitaciones en video, recordatorios animados y stories para redes sociales. Entrega express en 12 horas.',
+ '@animaeventstudio', null, 4, 'approved', 4.8,
+ '{motion,video,stories,express}'),
+
+('Digital Fiesta Colombia',
+ 'Laura Rincón', 'laura@digitalfiesta.co', '3001240003', 'Medellín',
+ '{recordatorios_digitales,invitaciones}', 45000, 200000, 'flat', 0, null,
+ 'Diseño de piezas digitales para fiestas: recordatorios, save-the-date y agradecimientos post-evento. Servicio a nivel nacional con entrega por email o WhatsApp.',
+ '@digitalfiestacol', null, 5, 'approved', 4.6,
+ '{nacional,save_the_date,agradecimiento}'),
+
+('Invite & Go Cali',
+ 'Valentina Lozano', 'vale@inviteandgo.co', '3001240004', 'Cali',
+ '{recordatorios_digitales,invitaciones}', 30000, 130000, 'flat', 0, null,
+ 'Recordatorios y mini-sitios web para eventos en Cali. El invitado puede confirmar asistencia, ver el mapa y guardar la fecha desde el mismo mensaje.',
+ '@inviteandgocali', null, 2, 'approved', 4.5,
+ '{minisite,rsvp,confirmacion,mapa}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- NUEVOS TIPOS: detalles_mesa
+-- ══════════════════════════════════════════════════════════════
+
+('Centro & Mesa Bogotá',
+ 'Adriana Vargas', 'adri@centromesa.co', '3001240005', 'Bogotá',
+ '{detalles_mesa,flores}', 120000, 600000, 'flat', 0, null,
+ 'Centros de mesa florales y decorativos para eventos: arreglos con flores naturales, velas, espejos y portarretratos. Diseño a medida según paleta de colores del evento.',
+ '@centromesabog', null, 6, 'approved', 4.8,
+ '{centros_mesa,flores,velas,espejos}'),
+
+('Detalles & Estilo',
+ 'Mónica Herrera', 'moni@detallesestilo.co', '3001240006', 'Bogotá',
+ '{detalles_mesa}', 80000, 400000, 'flat', 0, null,
+ 'Centros de mesa temáticos para fiestas: miniaturas personalizadas, terrariums, flores secas y elementos decorativos coordinados con el tema del evento.',
+ '@detallesestilo', null, 4, 'approved', 4.6,
+ '{tematico,terrariums,flores_secas,miniaturas}'),
+
+('La Flor de Mesa',
+ 'Camila Agudelo', 'cami@laflormesa.co', '3001240007', 'Medellín',
+ '{detalles_mesa,flores}', 100000, 480000, 'flat', 0, null,
+ 'Centros de mesa con flores naturales y de temporada en Medellín. Diseño botánico y minimalista. Incluye mantelería coordinada y tarjetas de asiento personalizadas.',
+ '@laflormesa', null, 5, 'approved', 4.7,
+ '{botanico,minimalista,tarjetas,manteleria}'),
+
+('Ambientes Cali',
+ 'Daniela Castaño', 'dani@ambientescali.co', '3001240008', 'Cali',
+ '{detalles_mesa,decoracion}', 90000, 420000, 'flat', 0, null,
+ 'Ambientación de mesas para eventos en Cali: centros florales, candelabros, caminos de mesa y detalles personalizados para cada puesto. Estilo tropical y elegante.',
+ '@ambientescali', null, 4, 'approved', 4.5,
+ '{tropical,candelabros,caminos_mesa,elegante}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- NUEVOS TIPOS: algodon_azucar
+-- ══════════════════════════════════════════════════════════════
+
+('Nube de Azúcar',
+ 'Cristina Peña', 'cris@nubeazucar.co', '3001240009', 'Bogotá',
+ '{algodon_azucar}', 250000, 650000, 'flat', 0, 100,
+ 'Máquina de algodón de azúcar artesanal con operador para eventos. Colores personalizados según el tema. También disponible en sabores: fresa, uva, mango y tuttifruti.',
+ '@nubeazucar', null, 4, 'approved', 4.8,
+ '{algodon,artesanal,colores,sabores}'),
+
+('Dulce Nube Medellín',
+ 'Jorge Valencia', 'jorge@dulcenube.co', '3001240010', 'Medellín',
+ '{algodon_azucar,carrito_snacks}', 220000, 580000, 'flat', 0, 80,
+ 'Carrito de algodón de azúcar + palomitas para eventos en Medellín. Operador incluido, presentación decorada y empaque personalizado. Ideal para cumpleaños infantiles.',
+ '@dulcenubemed', null, 3, 'approved', 4.7,
+ '{carrito,palomitas,empaque,infantil}'),
+
+('Caramelito Show',
+ 'Diana Mendoza', 'diana@caramelito.co', '3001240011', 'Cali',
+ '{algodon_azucar}', 200000, 550000, 'flat', 0, 80,
+ 'Show de algodón de azúcar en Cali: máquina vintage decorada, operador uniformado y presentación con bolsas impresas con el nombre del evento.',
+ '@caramelo_show', null, 3, 'approved', 4.6,
+ '{vintage,bolsas,impreso,show}'),
+
+('Sweet Cloud Events',
+ 'Nicolás Bermúdez', 'nico@sweetcloud.co', '3001240012', 'Barranquilla',
+ '{algodon_azucar,carrito_snacks}', 230000, 600000, 'flat', 0, 90,
+ 'Servicio de algodón de azúcar y crispetas para eventos en Barranquilla y la Costa. Carrito caribeño decorado. Disponible en colores pasteles y neón.',
+ '@sweetcloudBAQ', null, 2, 'approved', 4.5,
+ '{caribeño,pasteles,neon,crispetas}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- NUEVOS TIPOS: seguridad
+-- ══════════════════════════════════════════════════════════════
+
+('Segurivent Colombia',
+ 'Carlos Mendoza', 'carlos@segurivent.co', '3001240013', 'Bogotá',
+ '{seguridad}', 350000, 1500000, 'flat', 0, 500,
+ 'Personal de seguridad para eventos sociales y corporativos. Control de acceso, supervisión de invitados y coordinación con autoridades locales. Bogotá y municipios.',
+ '@seguriventcol', 'https://segurivent.co', 8, 'approved', 4.6,
+ '{control_acceso,supervisores,corporativo,bogota}'),
+
+('VIP Security Events',
+ 'Andrés Molina', 'andres@vipsecurity.co', '3001240014', 'Bogotá',
+ '{seguridad}', 500000, 2000000, 'flat', 0, 1000,
+ 'Seguridad privada premium para eventos de alto perfil. Personal uniformado, comunicación por radio y coordinación total. Experiencia en quinceañeras, bodas y eventos corporativos.',
+ '@vipsecurityco', null, 12, 'approved', 4.8,
+ '{premium,uniformado,radio,quinces,bodas}'),
+
+('Guard Pro Medellín',
+ 'Fabián Ríos', 'fabian@guardpro.co', '3001240015', 'Medellín',
+ '{seguridad}', 300000, 1200000, 'flat', 0, 300,
+ 'Empresa de seguridad para eventos en Medellín y Antioquia. Control de acceso, parqueadero y supervisión de personal. Certificados por Superintendencia de Vigilancia.',
+ '@guardpromed', null, 6, 'approved', 4.5,
+ '{certificado,parqueadero,antioquia,supervision}'),
+
+('Costa Segura Eventos',
+ 'Roberto Álvarez', 'roberto@costasegura.co', '3001240016', 'Barranquilla',
+ '{seguridad}', 280000, 1000000, 'flat', 0, 400,
+ 'Personal de seguridad para eventos en la Costa Caribe. Barranquilla, Cartagena y Santa Marta. Control de acceso, wristbands y gestión de aforo.',
+ '@costaseguraeventos', null, 7, 'approved', 4.6,
+ '{costa,wristbands,aforo,caribe}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- NUEVOS TIPOS: limpieza
+-- ══════════════════════════════════════════════════════════════
+
+('Limpia Fest Bogotá',
+ 'Sandra Pinzón', 'sandra@limpiafest.co', '3001240017', 'Bogotá',
+ '{limpieza}', 200000, 800000, 'flat', 0, null,
+ 'Servicio de limpieza y desmontaje post-evento en Bogotá. Recolección de basuras, limpieza de salones, baños y áreas comunes. Disponibilidad inmediata al finalizar.',
+ '@limpiafestbog', null, 5, 'approved', 4.5,
+ '{desmontaje,baños,salones,inmediato}'),
+
+('CleanEvent Pro',
+ 'Jimena Castro', 'jimena@cleaneventpro.co', '3001240018', 'Bogotá',
+ '{limpieza}', 300000, 1000000, 'flat', 0, null,
+ 'Limpieza profesional para eventos: pre-evento y post-evento. Equipo certificado, productos ecológicos y garantía de salón impecable. Bogotá y alrededores.',
+ '@cleaneventpro', 'https://cleaneventpro.co', 7, 'approved', 4.7,
+ '{profesional,ecologico,pre_evento,garantia}'),
+
+('Aseo Total Eventos Medellín',
+ 'Patricia Loaiza', 'paty@aseototal.co', '3001240019', 'Medellín',
+ '{limpieza}', 180000, 700000, 'flat', 0, null,
+ 'Servicio de aseo especializado en eventos en Medellín. Personal uniformado, insumos incluidos y certificado de disposición de residuos. Disponible domingos y festivos.',
+ '@aseototaleventos', null, 6, 'approved', 4.4,
+ '{uniformado,residuos,festivos,medellin}'),
+
+('Brilla Eventos Cali',
+ 'Marcela Torres', 'marcela@brillaeventos.co', '3001240020', 'Cali',
+ '{limpieza}', 160000, 650000, 'flat', 0, null,
+ 'Limpieza pre y post-evento en Cali. Barrido, trapeo, limpieza de cocina y manejo de basuras. Equipo de 2 a 8 personas según el tamaño del evento.',
+ '@brillaeventoscali', null, 4, 'approved', 4.3,
+ '{pre_evento,cocina,equipo,cali}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- SERVICIOS BAJO-REPRESENTADOS — más proveedores para 3 tiers
+-- ══════════════════════════════════════════════════════════════
+
+-- carrito_snacks: necesita 2 más
+('Carrito Dulce Medellín',
+ 'Juliana Posada', 'juli@carritodulce.co', '3001240021', 'Medellín',
+ '{carrito_snacks,algodon_azucar}', 250000, 680000, 'flat', 0, 90,
+ 'Carrito de snacks dulces para eventos en Medellín: crispetas, algodón de azúcar, chocorramo y chuches. Decorado con el tema del evento. Operador incluido.',
+ '@carritodulcemed', null, 3, 'approved', 4.6,
+ '{crispetas,chuches,medellin,infantil}'),
+
+('Snack Rueda Cali',
+ 'Hernán Patiño', 'hernan@snackrueda.co', '3001240022', 'Cali',
+ '{carrito_snacks}', 220000, 620000, 'flat', 0, 80,
+ 'Carrito de snacks con ruedas estilo vintage para fiestas en Cali. Crispetas gourmet, maíz pira y paletas artesanales. Presentación en bolsas personalizadas.',
+ '@snackruedacali', null, 2, 'approved', 4.5,
+ '{vintage,gourmet,maiz_pira,paletas}'),
+
+-- helados_postres: necesita 2 más
+('Heladería El Polar Medellín',
+ 'Rodrigo Uribe', 'rodrigo@elpolar.co', '3001240023', 'Medellín',
+ '{helados_postres}', 250000, 700000, 'flat', 0, 90,
+ 'Carrito de helados artesanales para eventos en Medellín. 15 sabores nacionales y exóticos. Paletas de frutas, conos y postres. Operador incluido todo el evento.',
+ '@elpolar_med', null, 6, 'approved', 4.7,
+ '{artesanal,paletas,conos,sabores}'),
+
+('Postres & Más Cali',
+ 'Andrea Giraldo', 'andrea@postresmascali.co', '3001240024', 'Cali',
+ '{helados_postres,mesa_dulces}', 280000, 780000, 'flat', 0, 100,
+ 'Mesa de postres helados + dulces para eventos en Cali. Helados, cheesecakes miniatura, brownies y macarons. Presentación elegante con decoración incluida.',
+ '@postresymas_cali', null, 4, 'approved', 4.6,
+ '{cheesecakes,brownies,macarons,elegante}'),
+
+-- menaje: necesita 2 más
+('Vajillas del Pacífico Cali',
+ 'Beatriz Mosquera', 'bea@vajillaspacifico.co', '3001240025', 'Cali',
+ '{menaje,mobiliario}', 180000, 720000, 'per_person', 4500, 280,
+ 'Alquiler de vajilla, cristalería y mantelería para eventos en Cali. Diseños clásicos y modernos. Servicio de entrega, instalación y recogida. Precio por persona.',
+ '@vajillaspacifico', null, 7, 'approved', 4.5,
+ '{vajilla,cristaleria,cali,per_person}'),
+
+('Menaje Premium Medellín',
+ 'Catalina Zapata', 'cata@menajepm.co', '3001240026', 'Medellín',
+ '{menaje}', 200000, 800000, 'per_person', 5500, 250,
+ 'Arriendo de vajilla fina, copas de cristal y cubiertos plateados para eventos en Medellín. Presentación de lujo. Limpieza y empaque incluidos en el servicio.',
+ '@menajepm_med', null, 8, 'approved', 4.7,
+ '{fino,cristal,plateado,lujo}'),
+
+-- iluminacion: necesita 2 más
+('Ilumina Medellín',
+ 'Tomás Restrepo', 'tomas@iluminamed.co', '3001240027', 'Medellín',
+ '{iluminacion,sonido}', 280000, 850000, 'flat', 0, 200,
+ 'Diseño de iluminación + sonido para eventos en Medellín. Luces de colores, cañones de luz, efectos estroboscópicos y sistema de audio profesional.',
+ '@iluminamed', null, 6, 'approved', 4.7,
+ '{estroboscopico,colores,audio,medellin}'),
+
+('Luz Caribe Barranquilla',
+ 'César Palomino', 'cesar@luzcaribe.co', '3001240028', 'Barranquilla',
+ '{iluminacion}', 250000, 780000, 'flat', 0, 300,
+ 'Iluminación para eventos en Barranquilla y la Costa. Leds RGB, luces colgantes, pantallas LED y efectos de humo. Técnico incluido durante el evento.',
+ '@luzcaribebaq', null, 5, 'approved', 4.5,
+ '{rgb,humo,pantallas,costa}'),
+
+-- transporte: necesita 2 más
+('Van-Go Medellín',
+ 'Miguel Gómez', 'miguel@vangomed.co', '3001240029', 'Medellín',
+ '{transporte}', 180000, 720000, 'flat', 0, 45,
+ 'Transporte de invitados para eventos en Medellín y Antioquia. Vans de 8 y 15 puestos. Conductores con licencia profesional y seguro de pasajeros.',
+ '@vangomed', null, 5, 'approved', 4.5,
+ '{van,antioquia,licencia,seguro}'),
+
+('Bus Fiesta Colombia',
+ 'Óscar Trujillo', 'oscar@busfiesta.co', '3001240030', 'Cali',
+ '{transporte}', 200000, 900000, 'flat', 0, 60,
+ 'Transporte para eventos en Cali y el Valle del Cauca. Microbuses de 20 a 60 personas. Conductores uniformados y verificados. Disponible a cualquier hora.',
+ '@busfiestacol', null, 7, 'approved', 4.6,
+ '{microbus,valle,uniformado,nocturno}'),
+
+-- coordinador: necesita 2 más
+('Coordina Eventos Medellín',
+ 'Alejandra Muñoz', 'ale@coordinaeventos.co', '3001240031', 'Medellín',
+ '{coordinador}', 380000, 1100000, 'flat', 0, null,
+ 'Coordinación completa del día del evento en Medellín. Gestión de proveedores, timeline, protocolo y resolución de imprevistos. Más de 300 eventos coordinados.',
+ '@coordinaeventos_med', null, 8, 'approved', 4.8,
+ '{gestion,timeline,protocolo,imprevistos}'),
+
+('ProEvent Cali',
+ 'Lorena Caballero', 'lorena@proeventcali.co', '3001240032', 'Cali',
+ '{coordinador}', 350000, 1000000, 'flat', 0, null,
+ 'Coordinación logística de eventos en Cali. Director de evento, asistente y comunicación directa con todos los proveedores. Reunión previa de planificación incluida.',
+ '@proeventcali', null, 6, 'approved', 4.7,
+ '{director,asistente,planificacion,cali}'),
+
+-- bebidas: necesita 2 más
+('Refrescos Cali Eventos',
+ 'Gustavo Mosquera', 'gustavo@refrescos.co', '3001240033', 'Cali',
+ '{bebidas}', 160000, 650000, 'per_person', 7000, null,
+ 'Servicio de bebidas para eventos en Cali: jugos de fruta fresca, limonadas naturales, agua, gaseosas y café. Neveras y mesas de servicio incluidas.',
+ '@refrescoscali', null, 4, 'approved', 4.4,
+ '{jugos,limonada,fresca,cali}'),
+
+('HidraBaq Barranquilla',
+ 'Natalia Orozco', 'nata@hidrabaq.co', '3001240034', 'Barranquilla',
+ '{bebidas,bartender}', 200000, 780000, 'per_person', 8000, null,
+ 'Bebidas y bar para eventos en Barranquilla: cócteles tropicales, jugos de frutas costeñas y bebidas frías. Perfecto para eventos en la Costa Caribe.',
+ '@hidrabaq', null, 3, 'approved', 4.5,
+ '{tropicales,costeno,cocteles,baq}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- CALI — cobertura de servicios faltantes
+-- ══════════════════════════════════════════════════════════════
+
+('Sillas Cali Eventos',
+ 'Fernando Parra', 'fernando@sillascali.co', '3001240035', 'Cali',
+ '{mobiliario}', 270000, 900000, 'per_person', 8500, 300,
+ 'Arriendo de sillas y mesas para eventos en Cali. Tiffany, plástica y plegable. Mesas redondas, cuadradas y rectangulares. Entrega, instalación y recogida incluidas.',
+ '@sillascali', null, 9, 'approved', 4.6,
+ '{tiffany,plegable,mesas,cali}'),
+
+('Snack Kids Cali',
+ 'Mariana Becerra', 'mariana@snackkids.co', '3001240036', 'Cali',
+ '{pasabocas_ninos}', 180000, 480000, 'per_child', 8500, null,
+ 'Pasabocas para niños en Cali: bolsitas con chitos, papas, galletas, jugo y dulce sorpresa. Presentación temática personalizada. Servicio a domicilio.',
+ '@snackkidscali', null, 3, 'approved', 4.5,
+ '{bolsitas,domicilio,tematico,ninos}'),
+
+('Cinemax Cali Foto-Video',
+ 'Alejandro Ossa', 'alejo@cinemaxcali.co', '3001240037', 'Cali',
+ '{videografo,fotografo}', 300000, 900000, 'flat', 0, null,
+ 'Fotografía y video profesional para eventos en Cali. Cobertura completa, edición en 7 días y entrega en galería digital. Incluye reel de 60 segundos para Instagram.',
+ '@cinemaxcali', null, 5, 'approved', 4.7,
+ '{video,foto,reels,galeria}'),
+
+('Foto Cabina Cali',
+ 'Isabella Reyes', 'isa@fotocabinacali.co', '3001240038', 'Cali',
+ '{photobooth}', 280000, 620000, 'flat', 0, null,
+ 'Cabina de fotos para eventos en Cali. Props incluidos, impresión instantánea, fondo personalizado y galería digital. Atendida por operador todo el evento.',
+ '@fotocabinacali', null, 3, 'approved', 4.6,
+ '{props,impresion,fondo,operador}'),
+
+('Audio Cali Pro',
+ 'Mauricio Guerrero', 'mauri@audiocalipro.co', '3001240039', 'Cali',
+ '{sonido,dj_musica}', 280000, 780000, 'flat', 0, 250,
+ 'DJ + equipo de sonido profesional para eventos en Cali. Equipos QSC, mezcla en vivo, micrófonos inalámbricos y repertorio variado: salsa, vallenato, pop y electrónica.',
+ '@audiocalipro', null, 7, 'approved', 4.8,
+ '{qsc,salsa,vallenato,mezcla_vivo}'),
+
+('Luces & Show Cali',
+ 'Diego Castaño', 'diego@lucesshowcali.co', '3001240040', 'Cali',
+ '{iluminacion}', 270000, 800000, 'flat', 0, 200,
+ 'Diseño lumínico para eventos en Cali y el Valle. Luces LED, follow spots, gobo proyectores y cabezas móviles. Montaje 2h antes del evento, técnico presente.',
+ '@lucesshowcali', null, 5, 'approved', 4.6,
+ '{gobo,cabezas_moviles,follow,tecnico}'),
+
+('Meseros Profesionales Cali',
+ 'Carmen Mosquera', 'carmen@mescali.co', '3001240041', 'Cali',
+ '{meseros}', 250000, 780000, 'per_person', 14000, null,
+ 'Servicio de meseros uniformados para eventos en Cali. Atención de mesa, coctelería, servicio francés y desamulete. Supervisora incluida para grupos de más de 10 personas.',
+ '@mescali', null, 8, 'approved', 4.7,
+ '{uniformados,frances,supervisor,cali}'),
+
+('Bar Cali Fiestas',
+ 'Felipe Mosquera', 'felip@barcali.co', '3001240042', 'Cali',
+ '{bartender,bebidas}', 420000, 1300000, 'flat', 0, 130,
+ 'Bar y bartender para eventos en Cali. Cócteles tropicales con licor y sin alcohol. Decoración de barra incluida. Especialidad en cócteles con ingredientes vallecaucanos.',
+ '@barcalifiestas', null, 5, 'approved', 4.7,
+ '{tropicales,vallecaucano,sin_alcohol,decoracion}'),
+
+('Florería del Valle',
+ 'Sofía Ruiz', 'sofia@floreriadelvalle.co', '3001240043', 'Cali',
+ '{flores,detalles_mesa}', 160000, 620000, 'flat', 0, null,
+ 'Arreglos florales naturales para eventos en Cali y el Valle. Flores de temporada: astromelias, girasoles, rosas y orquídeas. Diseño personalizado según tema del evento.',
+ '@floreriavalle', null, 9, 'approved', 4.8,
+ '{astromelias,orquideas,valle,temporada}'),
+
+('Jump Inflables Cali',
+ 'Bernardo Sinisterra', 'berna@jumpinflables.co', '3001240044', 'Cali',
+ '{inflables}', 180000, 520000, 'flat', 0, 45,
+ 'Arriendo de inflables para fiestas en Cali: castillos, toboganes y piscinas de pelotas. Instalación y operador incluidos. Desinfección total antes de cada uso.',
+ '@jumpinflablescali', null, 4, 'approved', 4.5,
+ '{castillos,toboganes,pelotas,desinfeccion}'),
+
+('Dulce Mesa Cali',
+ 'Andrea Rengifo', 'andrea@dulcemesacali.co', '3001240045', 'Cali',
+ '{mesa_dulces,pastel}', 300000, 900000, 'flat', 0, null,
+ 'Mesa de dulces + torta para eventos en Cali. Cupcakes, macarons, trufas y decoración temática coordinada. Todo bajo el mismo concepto visual del evento.',
+ '@dulcemesacali', null, 5, 'approved', 4.7,
+ '{cupcakes,trufas,coordinado,concepto}'),
+
+('Personajes Valle Show',
+ 'Lina Caicedo', 'lina@personajesvalle.co', '3001240046', 'Cali',
+ '{personaje_tematico,show_infantil}', 240000, 580000, 'flat', 0, 60,
+ 'Personajes disfrazados y shows infantiles en Cali. Bluey, Peppa, Spiderman, princesas y dinosaurios. Show de 60 min con baile, juegos y sesión de fotos.',
+ '@personajesvalle', null, 4, 'approved', 4.8,
+ '{bluey,peppa,spiderman,princesas}'),
+
+('Magia Valle Colombia',
+ 'Simón Andrade', 'simon@magiavalle.co', '3001240047', 'Cali',
+ '{magia,pintucaritas}', 220000, 520000, 'flat', 0, 70,
+ 'Mago + pintucaritas para eventos en Cali. Show de magia de 45 min y maquillaje artístico para niños. Paquete completo con materiales y ambientación incluida.',
+ '@magiavallecol', null, 5, 'approved', 4.6,
+ '{mago_pintucaritas,paquete,ninos,60min}'),
+
+('Invita Valle',
+ 'Carolina Hurtado', 'caro@invitavalle.co', '3001240048', 'Cali',
+ '{invitaciones,recordatorios_digitales}', 45000, 200000, 'flat', 0, null,
+ 'Diseño de invitaciones y recordatorios digitales para eventos en Cali. Animaciones personalizadas, RSVP online y envío masivo por WhatsApp.',
+ '@invitavalle', null, 3, 'approved', 4.5,
+ '{animadas,rsvp,masivo,whatsapp}'),
+
+('Recuerda Cali',
+ 'Paula Rengifo', 'paula@recuerdacali.co', '3001240049', 'Cali',
+ '{souvenirs,pinata}', 130000, 400000, 'per_child', 6500, null,
+ 'Souvenirs y piñatas coordinados para fiestas en Cali. Diseño unificado: el mismo tema en el souvenir y la piñata. Mínimo 15 unidades. Envío en Cali.',
+ '@recuerdacali', null, 4, 'approved', 4.6,
+ '{coordinado,unificado,minimo,envio}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- BARRANQUILLA — cobertura completa
+-- ══════════════════════════════════════════════════════════════
+
+('Dulce Costa Pasteles',
+ 'Karla Mercado', 'karla@dulcecosta.co', '3001240050', 'Barranquilla',
+ '{pastel}', 80000, 290000, 'flat', 0, null,
+ 'Tortas y pasteles para fiestas en Barranquilla. Temáticas costeñas y personajes populares. Buttercream tropical, fondant y naked cakes. Entrega en el área metropolitana.',
+ '@dulcecostabaq', null, 5, 'approved', 4.7,
+ '{tropical,buttercream,fondant,baq}'),
+
+('Ricos Pasabocas BAQ',
+ 'Yolanda Ramos', 'yoly@ricosbaq.co', '3001240051', 'Barranquilla',
+ '{pasabocas_ninos}', 160000, 440000, 'per_child', 8000, null,
+ 'Pasabocas para niños en Barranquilla: bolsitas costeñas con chicharrines, galletas, jugo de maracuyá y sorpresa. Entrega a domicilio en la ciudad.',
+ '@ricosbaq', null, 3, 'approved', 4.5,
+ '{costeno,maracuya,domicilio,bolsitas}'),
+
+('Costeño Catering BAQ',
+ 'Rafael Blanco', 'rafa@costeñocatering.co', '3001240052', 'Barranquilla',
+ '{picadas_adultos,catering_completo}', 700000, 1700000, 'per_adult', 16000, 120,
+ 'Picadas costeñas para adultos en Barranquilla: bollos, arepa de huevo, patacones, chorizos y bebidas típicas. Catering completo disponible con personal de servicio.',
+ '@costeñocateringbaq', null, 8, 'approved', 4.8,
+ '{bollos,arepa_huevo,costeno,tipico}'),
+
+('Mobil Sillas BAQ',
+ 'Ingrid Fuentes', 'ingrid@mobilsillasbaq.co', '3001240053', 'Barranquilla',
+ '{mobiliario}', 250000, 850000, 'per_person', 8000, 250,
+ 'Arriendo de sillas y mesas para eventos en Barranquilla. Plegables, Tiffany y plásticas. Entrega, instalación y recogida en toda la ciudad. Disponible fines de semana.',
+ '@mobilsillasbaq', null, 6, 'approved', 4.5,
+ '{plegables,tiffany,baq,fines_semana}'),
+
+('Recuerdos Costa',
+ 'Mariela Díaz', 'mariela@recuerdoscosta.co', '3001240054', 'Barranquilla',
+ '{souvenirs,pinata}', 110000, 340000, 'per_child', 6000, null,
+ 'Souvenirs y piñatas temáticas para fiestas en Barranquilla. Diseño costero y vibrante. Bolsitas personalizadas y piñatas de cartón. Mínimo 20 unidades.',
+ '@recuerdoscostabaq', null, 4, 'approved', 4.5,
+ '{costero,vibrante,carton,minimo}'),
+
+('Lente Costa Fotografía',
+ 'Daniela Pinto', 'dani@lentecosta.co', '3001240055', 'Barranquilla',
+ '{fotografo,videografo}', 260000, 680000, 'flat', 0, null,
+ 'Fotografía y video para eventos en Barranquilla. Cobertura 4h, galería digital y reel para Instagram. Especialidad en fiestas infantiles y reuniones familiares costeñas.',
+ '@lentecostabaq', null, 5, 'approved', 4.7,
+ '{infantil,familiar,reel,galeria}'),
+
+('Meseros BAQ Pro',
+ 'Harold Orozco', 'harold@meserosBAQ.co', '3001240056', 'Barranquilla',
+ '{meseros,catering_completo}', 260000, 780000, 'per_person', 14000, null,
+ 'Meseros y catering para eventos en Barranquilla. Servicio de mesa, bandeja y estilo costeño. Personal uniformado y puntual. Grupos de 20 a 200 personas.',
+ '@meserosbaqpro', null, 7, 'approved', 4.6,
+ '{costeno,bandeja,puntual,uniformado}'),
+
+('Bar Caribe BAQ',
+ 'Luis Palencia', 'luis@barcaribbaq.co', '3001240057', 'Barranquilla',
+ '{bartender,bebidas}', 380000, 1100000, 'flat', 0, 120,
+ 'Bar y bartender costeño para eventos en Barranquilla. Cócteles con ron, aguardiente y licores tropicales. Mojitos caribeños, cocteles de mango y maracuyá.',
+ '@barcaribbaq', null, 6, 'approved', 4.7,
+ '{ron,caribe,mango,maracuya}'),
+
+('ShowBaq Entretenimiento',
+ 'Sandra Pertuz', 'sandra@showbaq.co', '3001240058', 'Barranquilla',
+ '{recreacionista,personaje_tematico,show_infantil}', 260000, 520000, 'flat', 0, 70,
+ 'Recreacionistas y personajes para fiestas en Barranquilla. Shows con ritmos costeños, personajes infantiles y animación tropical. 90 min de espectáculo.',
+ '@showbaq', null, 5, 'approved', 4.7,
+ '{costeno,tropical,recreacion,animacion}'),
+
+('PhotoBooth BAQ',
+ 'Camila Ventura', 'cami@photoboothbaq.co', '3001240059', 'Barranquilla',
+ '{photobooth}', 270000, 620000, 'flat', 0, null,
+ 'Cabina de fotos para eventos en Barranquilla. Ambiente tropical, props caribeños y fondo personalizado. Galería digital con acceso instantáneo por QR.',
+ '@photoboothbaq', null, 3, 'approved', 4.5,
+ '{tropical,caribeno,props,qr}'),
+
+('Flores BAQ',
+ 'Rossana Acosta', 'rossana@floresbaq.co', '3001240060', 'Barranquilla',
+ '{flores,arco_globos}', 140000, 560000, 'flat', 0, null,
+ 'Arreglos florales tropicales y arcos de globos para eventos en Barranquilla. Flores exóticas, bromelias, anturios y heliconias. Instalación incluida.',
+ '@floresbaq', null, 6, 'approved', 4.6,
+ '{tropicales,bromelias,heliconias,exoticas}'),
+
+('Sonido & DJ BAQ',
+ 'Junior Cantillo', 'junior@sonidodj.co', '3001240061', 'Barranquilla',
+ '{sonido,iluminacion}', 280000, 780000, 'flat', 0, 250,
+ 'Sonido e iluminación profesional para eventos en Barranquilla. Sistema QSC, luces LED y efectos de humo. DJ disponible como servicio adicional.',
+ '@sonidodjbaq', null, 7, 'approved', 4.6,
+ '{qsc,led,humo,profesional}'),
+
+('Coordina BAQ',
+ 'María José López', 'majo@coordinabaq.co', '3001240062', 'Barranquilla',
+ '{coordinador}', 360000, 1000000, 'flat', 0, null,
+ 'Coordinación logística de eventos en Barranquilla y la Costa. Gestión total del día del evento, proveedores y timeline. Bilingüe español-inglés.',
+ '@coordinabaq', null, 5, 'approved', 4.7,
+ '{logistica,timeline,bilingue,costa}'),
+
+('Mesa Dulces BAQ',
+ 'Ana Verbel', 'ana@mesadulcesbaq.co', '3001240063', 'Barranquilla',
+ '{mesa_dulces}', 270000, 800000, 'flat', 0, null,
+ 'Mesa de dulces tropical para eventos en Barranquilla. Cupcakes de coco, maracuyá y mango. Decoración caribeña incluida. Entrega e instalación en la ciudad.',
+ '@mesadulcesbaq', null, 4, 'approved', 4.6,
+ '{coco,tropical,caribeño,instalacion}'),
+
+('Piñatas & Recuerdos BAQ',
+ 'Cecilia Navarro', 'ceci@piñatasbaq.co', '3001240064', 'Barranquilla',
+ '{pinata,invitaciones}', 55000, 190000, 'flat', 0, null,
+ 'Piñatas temáticas e invitaciones para fiestas en Barranquilla. Personajes infantiles y diseños costeños. Dulces incluidos en piñata. Envío en toda la ciudad.',
+ '@piñatasbaq', null, 5, 'approved', 4.4,
+ '{tematico,costeno,dulces,envio}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- CARTAGENA — cobertura completa
+-- ══════════════════════════════════════════════════════════════
+
+('Fiestas Cartagena Kids',
+ 'Gabriela Torres', 'gaby@fiestasctg.co', '3001240065', 'Cartagena',
+ '{recreacionista,personaje_tematico}', 270000, 550000, 'flat', 0, 60,
+ 'Recreacionistas y personajes para fiestas infantiles en Cartagena. Shows con música caribeña y personajes temáticos. Disponible en clubes, fincas y salones del Caribe.',
+ '@fiestasctgkids', null, 5, 'approved', 4.7,
+ '{caribeña,clubs,fincas,infantil}'),
+
+('Repostería Cartagenera',
+ 'Pilar Pombo', 'pilar@reposteriacartagena.co', '3001240066', 'Cartagena',
+ '{pastel,mesa_dulces}', 90000, 320000, 'flat', 0, null,
+ 'Tortas y mesas dulces para fiestas en Cartagena. Sabores tropicales: coco con piña, limón costeño y arequipe. Decoración con temática colonial y caribeña.',
+ '@reposteriacartagena', null, 6, 'approved', 4.7,
+ '{coco,limon_costeno,colonial,caribeño}'),
+
+('Snacks Caribe CTG',
+ 'Eduardo Causado', 'edu@snackscaribe.co', '3001240067', 'Cartagena',
+ '{pasabocas_ninos,picadas_adultos}', 600000, 1600000, 'flat', 0, 100,
+ 'Pasabocas para niños y picadas para adultos en Cartagena. Menú costero: bollos, arepas, patacones y bebidas naturales. Servicio integral para toda la familia.',
+ '@snackscaribectg', null, 4, 'approved', 4.5,
+ '{bollos,patacones,costero,integral}'),
+
+('Muebles & Eventos CTG',
+ 'Patricia de la Espriella', 'pati@mueblescartg.co', '3001240068', 'Cartagena',
+ '{mobiliario,menaje}', 260000, 880000, 'per_person', 9000, 200,
+ 'Arriendo de mobiliario y menaje para eventos en Cartagena. Sillas crossback, mesas coloniales y vajilla de porcelana. Entrega en toda la ciudad y zona norte.',
+ '@mueblescartg', null, 7, 'approved', 4.6,
+ '{crossback,colonial,porcelana,zona_norte}'),
+
+('Foto Caribe CTG',
+ 'Andrés Zuñiga', 'andres@fotocaribectg.co', '3001240069', 'Cartagena',
+ '{fotografo,videografo}', 280000, 750000, 'flat', 0, null,
+ 'Fotografía y video para eventos en Cartagena. Cobertura al aire libre, en playas y salones coloniales. Drone disponible para tomas aéreas del Caribe.',
+ '@fotocaribectg', 'https://fotocaribectg.co', 8, 'approved', 4.9,
+ '{playa,colonial,drone,aereo}'),
+
+('DJ Caribe Fiestas',
+ 'Germán Salas', 'german@djcaribe.co', '3001240070', 'Cartagena',
+ '{dj_musica,sonido}', 300000, 800000, 'flat', 0, 200,
+ 'DJ y sonido para eventos en Cartagena. Especialidad en música costeña: champeta, vallenato, cumbia y salsa. Equipos resistentes al calor y la humedad caribeña.',
+ '@djcaribefiestas', null, 6, 'approved', 4.7,
+ '{champeta,vallenato,cumbia,caribeño}'),
+
+('Recuerdos CTG',
+ 'Cynthia Orozco', 'cynthia@recuerdosctg.co', '3001240071', 'Cartagena',
+ '{souvenirs,invitaciones}', 120000, 380000, 'per_child', 6500, null,
+ 'Souvenirs e invitaciones para fiestas en Cartagena. Diseños caribeños y coloniales. Recuerdos con conchas, estrellas de mar y motivos tropicales personalizados.',
+ '@recuerdosctg', null, 4, 'approved', 4.6,
+ '{caribeno,colonial,conchas,tropicales}'),
+
+('Bar CTG Caribeño',
+ 'Jairo Barbosa', 'jairo@barctg.co', '3001240072', 'Cartagena',
+ '{bartender,bebidas}', 400000, 1200000, 'flat', 0, 100,
+ 'Bartender y bebidas para eventos en Cartagena. Cócteles con licores caribeños, cocteles de frutos del Caribe y refrescos tropicales. Barra decorada con el tema del evento.',
+ '@barctgcaribeño', null, 7, 'approved', 4.8,
+ '{caribeño,licores,frutos,tropicales}'),
+
+('Servicios CTG Eventos',
+ 'Rocío Vélez', 'rocio@servictg.co', '3001240073', 'Cartagena',
+ '{meseros,coordinador}', 320000, 950000, 'flat', 0, null,
+ 'Meseros y coordinación para eventos en Cartagena. Personal bilingüe, uniformado y con experiencia en eventos internacionales. Servicio para hasta 300 invitados.',
+ '@servictg', null, 9, 'approved', 4.8,
+ '{bilingue,uniformado,internacional,premium}'),
+
+('Inflables CTG',
+ 'Carlos Buelvas', 'carlos@inflablesctg.co', '3001240074', 'Cartagena',
+ '{inflables}', 190000, 520000, 'flat', 0, 40,
+ 'Arriendo de inflables para fiestas en Cartagena. Castillos y piscinas de pelotas resistentes al sol caribeño. Instalación y operador incluidos. Disponible fines de semana.',
+ '@inflablesctg', null, 3, 'approved', 4.4,
+ '{sol,castillos,pelotas,fines_semana}'),
+
+('Flores Caribe CTG',
+ 'Matilde Soto', 'mati@florescaribectg.co', '3001240075', 'Cartagena',
+ '{flores,detalles_mesa}', 170000, 650000, 'flat', 0, null,
+ 'Florería tropical para eventos en Cartagena. Flores del Caribe, heliconias, anturios y tropicales. Centros de mesa y decoración floral para todo tipo de evento.',
+ '@florescaribectg', null, 6, 'approved', 4.7,
+ '{heliconia,anturio,tropical,caribeno}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- BUCARAMANGA — cobertura completa
+-- ══════════════════════════════════════════════════════════════
+
+('Animación BGA Kids',
+ 'Fabiola Serrano', 'fabiola@animacionbga.co', '3001240076', 'Bucaramanga',
+ '{recreacionista,show_infantil}', 260000, 500000, 'flat', 0, 60,
+ 'Recreacionistas y shows infantiles en Bucaramanga y el área metropolitana. Animación de 2 horas, piñata incluida y sorpresas. Grupos de 10 a 80 niños.',
+ '@animacionbga', null, 5, 'approved', 4.6,
+ '{santander,metro,pinata,sorpresas}'),
+
+('Tortas & Arte BGA',
+ 'Ligia Hernández', 'ligia@tortasbga.co', '3001240077', 'Bucaramanga',
+ '{pastel}', 70000, 270000, 'flat', 0, null,
+ 'Tortas artesanales y temáticas para fiestas en Bucaramanga. Sabores: chocolate santandereano, arequipe, frutos rojos y vainilla. Diseños personalizados.',
+ '@tortasbga', null, 7, 'approved', 4.7,
+ '{santandereano,arequipe,tematico,artesanal}'),
+
+('Snack BGA',
+ 'Claudia Torres', 'claudia@snackbga.co', '3001240078', 'Bucaramanga',
+ '{pasabocas_ninos,picadas_adultos}', 550000, 1500000, 'flat', 0, 80,
+ 'Pasabocas para niños y picadas para adultos en Bucaramanga. Combo familiar con opciones típicas santandereanas: hormigas culonas, mute y chicharrones artesanales.',
+ '@snackbga', null, 4, 'approved', 4.5,
+ '{santandereano,hormigas,mute,familiar}'),
+
+('Sillas BGA Eventos',
+ 'Ernesto Díaz', 'ernesto@sillasbga.co', '3001240079', 'Bucaramanga',
+ '{mobiliario}', 240000, 820000, 'per_person', 8000, 220,
+ 'Arriendo de sillas y mesas para eventos en Bucaramanga y Santander. Tiffany, plegables y mesas redondas. Entrega, armado y recogida en el área metropolitana.',
+ '@sillasbga', null, 6, 'approved', 4.5,
+ '{santander,tiffany,plegables,area_metro}'),
+
+('Foto BGA Eventos',
+ 'Álvaro Gómez', 'alvaro@fotobga.co', '3001240080', 'Bucaramanga',
+ '{fotografo}', 250000, 650000, 'flat', 0, null,
+ 'Fotografía profesional para eventos en Bucaramanga. Cobertura 3-5 horas, galería digital en 7 días y 20 fotos impresas. Especialidad en fiestas infantiles y bodas íntimas.',
+ '@fotobgaeventos', null, 5, 'approved', 4.6,
+ '{impresiones,galeria,bodas,infantil}'),
+
+('Recuerdos BGA',
+ 'Gloria Medina', 'gloria@recuerdosbga.co', '3001240081', 'Bucaramanga',
+ '{souvenirs,pinata}', 115000, 360000, 'per_child', 6000, null,
+ 'Souvenirs y piñatas para fiestas en Bucaramanga. Diseños temáticos santandereanos. Personalización con nombre y fecha. Entrega en toda el área metropolitana.',
+ '@recuerdosbga', null, 4, 'approved', 4.5,
+ '{santandereano,personalizado,envio,metro}'),
+
+('DJ BGA Sound',
+ 'Héctor Llanes', 'hector@djbgasound.co', '3001240082', 'Bucaramanga',
+ '{dj_musica,sonido}', 270000, 720000, 'flat', 0, 180,
+ 'DJ y sonido para eventos en Bucaramanga. Géneros: vallenato, merengue, salsa, pop y tropical. Equipos premium con sub bajo. Disponible para eventos de todo tamaño.',
+ '@djbgasound', null, 6, 'approved', 4.7,
+ '{vallenato,merengue,sub_bajo,premium}'),
+
+('Meseros BGA Pro',
+ 'Rosa Rueda', 'rosa@meserosbga.co', '3001240083', 'Bucaramanga',
+ '{meseros}', 230000, 720000, 'per_person', 13000, null,
+ 'Servicio de meseros para eventos en Bucaramanga. Personal uniformado, puntual y con experiencia en eventos familiares y corporativos. Grupos de 20 a 150 personas.',
+ '@meserosbgapro', null, 7, 'approved', 4.6,
+ '{corporativo,puntual,familiar,santander}'),
+
+('Inflables BGA',
+ 'Camilo Hernández', 'cami@inflablesbga.co', '3001240084', 'Bucaramanga',
+ '{inflables}', 170000, 480000, 'flat', 0, 40,
+ 'Inflables para fiestas en Bucaramanga. Castillos y toboganes de diferentes tamaños. Instalación 1 hora antes del evento y desmontaje al finalizar.',
+ '@inflablesbga', null, 4, 'approved', 4.4,
+ '{castillos,toboganes,instalacion,desmontaje}'),
+
+('Coordina BGA',
+ 'Marcela Ruiz', 'marcela@coordinabga.co', '3001240085', 'Bucaramanga',
+ '{coordinador,flores}', 340000, 980000, 'flat', 0, null,
+ 'Coordinación de eventos y arreglos florales en Bucaramanga. Gestión de proveedores, timeline detallado y decoración floral incluida. Más de 200 eventos realizados.',
+ '@coordinabga', null, 6, 'approved', 4.7,
+ '{timeline,floral,gestion,200eventos}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- PEREIRA — cobertura completa
+-- ══════════════════════════════════════════════════════════════
+
+('Animación Pereira Fiesta',
+ 'Alejandra López', 'ale@animacionpereira.co', '3001240086', 'Pereira',
+ '{recreacionista,personaje_tematico}', 250000, 500000, 'flat', 0, 60,
+ 'Recreacionistas y personajes temáticos para fiestas en Pereira y el Eje Cafetero. 2 horas de entretenimiento infantil. Grupos de 10 a 70 niños.',
+ '@animacionpereira', null, 4, 'approved', 4.6,
+ '{eje_cafetero,tematico,2horas,infantil}'),
+
+('Pastelería La Ceiba PTO',
+ 'Consuelo Hoyos', 'consu@pasteleriapto.co', '3001240087', 'Pereira',
+ '{pastel}', 65000, 250000, 'flat', 0, null,
+ 'Tortas artesanales para fiestas en Pereira. Sabores de la región: café, naranja y chocolate cafetero. Decoraciones personalizadas. Entrega en Pereira, Dosquebradas y Santa Rosa.',
+ '@pasteleriapto', null, 8, 'approved', 4.7,
+ '{cafetero,naranja,chocolate,artesanal}'),
+
+('Snacks PTO',
+ 'Beatriz Giraldo', 'bea@snackspto.co', '3001240088', 'Pereira',
+ '{pasabocas_ninos,picadas_adultos}', 520000, 1400000, 'flat', 0, 80,
+ 'Pasabocas y picadas para eventos en Pereira. Combo cafetero: pandeyuca, empanadas, frutas de la región y jugos de lulo o maracuyá. Servicio integral familiar.',
+ '@snackspto', null, 4, 'approved', 4.5,
+ '{pandeyuca,empanadas,lulo,cafetero}'),
+
+('Muebles PTO Eventos',
+ 'Óscar Cardona', 'oscar@mueblespto.co', '3001240089', 'Pereira',
+ '{mobiliario}', 230000, 800000, 'per_person', 7500, 200,
+ 'Arriendo de sillas y mesas para eventos en Pereira y el Eje Cafetero. Plegables, Tiffany y plásticas. Entrega en toda el área metropolitana de Pereira.',
+ '@mueblespto', null, 5, 'approved', 4.5,
+ '{plegables,tiffany,eje_cafetero,metro}'),
+
+('Foto & Video PTO',
+ 'Catalina Bedoya', 'cata@fotovidepto.co', '3001240090', 'Pereira',
+ '{fotografo,videografo}', 250000, 680000, 'flat', 0, null,
+ 'Fotografía y video para eventos en Pereira. Cobertura de 4 horas, galería digital en 7 días y reel para redes. Estilo documental y natural para eventos familiares.',
+ '@fotovidepto', null, 5, 'approved', 4.7,
+ '{documental,natural,redes,familiar}'),
+
+('Recuerda Pereira',
+ 'Viviana García', 'viviana@recuerdapereira.co', '3001240091', 'Pereira',
+ '{souvenirs}', 100000, 320000, 'per_child', 5500, null,
+ 'Souvenirs personalizados para fiestas en Pereira. Bolsitas con recuerdos temáticos, detalles con café colombiano y personalización con nombre del evento.',
+ '@recuerdapereira', null, 3, 'approved', 4.5,
+ '{cafe_colombiano,bolsitas,personalizado}'),
+
+('DJ & Sonido Pereira',
+ 'Santiago Ocampo', 'santi@djsonidopto.co', '3001240092', 'Pereira',
+ '{dj_musica,sonido,iluminacion}', 280000, 750000, 'flat', 0, 200,
+ 'DJ, sonido e iluminación para eventos en Pereira. Equipos profesionales, variedad musical y luces LED. Disponible para fiestas de todos los tamaños en el Eje Cafetero.',
+ '@djsonidopto', null, 6, 'approved', 4.6,
+ '{led,variedad,profesional,eje}'),
+
+('Catering PTO',
+ 'Nelcy Arango', 'nelcy@cateringpto.co', '3001240093', 'Pereira',
+ '{meseros,catering_completo,bebidas}', 400000, 1500000, 'per_person', 22000, 100,
+ 'Meseros y catering completo para eventos en Pereira. Menú paisa adaptado: frijolada, bandeja regional y postres típicos. Personal uniformado y puntual.',
+ '@cateringpto', null, 7, 'approved', 4.7,
+ '{paisa,frijolada,bandeja,tipico}'),
+
+('Inflables PTO',
+ 'Germán Tabares', 'german@inflablespto.co', '3001240094', 'Pereira',
+ '{inflables}', 160000, 460000, 'flat', 0, 40,
+ 'Inflables para fiestas en Pereira. Castillos, toboganes y piscinas de pelotas. Instalación y operador incluidos. Disponible los 7 días de la semana.',
+ '@inflablespto', null, 3, 'approved', 4.4,
+ '{castillos,toboganes,pelotas,7dias}'),
+
+('Coordina Pereira',
+ 'Paola Montoya', 'paola@coordinapereira.co', '3001240095', 'Pereira',
+ '{coordinador,bartender}', 330000, 950000, 'flat', 0, null,
+ 'Coordinación de eventos y bar en Pereira. Director de evento + bartender con cócteles cafeteros. Especialidad en eventos al aire libre en fincas del Eje Cafetero.',
+ '@coordinapereira', null, 5, 'approved', 4.6,
+ '{fincas,cafetero,aire_libre,cockteles}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- MANIZALES — cobertura completa
+-- ══════════════════════════════════════════════════════════════
+
+('Fiestas Manizales',
+ 'Juliana Ospina', 'juli@fiestasmanizales.co', '3001240096', 'Manizales',
+ '{recreacionista,show_infantil}', 240000, 490000, 'flat', 0, 60,
+ 'Recreacionistas y shows infantiles en Manizales y Caldas. 2 horas de entretenimiento. Piñata y sorpresas incluidas. Disponible en todos los barrios de la ciudad.',
+ '@fiestasmanizales', null, 4, 'approved', 4.6,
+ '{caldas,2horas,piñata,barrios}'),
+
+('Snacks y Picadas MZL',
+ 'Adriana Castaño', 'adri@snacksmzl.co', '3001240097', 'Manizales',
+ '{pasabocas_ninos,picadas_adultos}', 500000, 1400000, 'flat', 0, 80,
+ 'Pasabocas para niños y picadas para adultos en Manizales. Menú cafetero: pandeyuca, buñuelos, pandebono y jugos de lulo. Servicio a domicilio en toda la ciudad.',
+ '@snacksmzl', null, 3, 'approved', 4.4,
+ '{pandeyuca,buñuelos,lulo,domicilio}'),
+
+('Sillas Manizales',
+ 'Rodrigo Aguirre', 'rodri@sillasmanizales.co', '3001240098', 'Manizales',
+ '{mobiliario}', 220000, 780000, 'per_person', 7500, 200,
+ 'Arriendo de sillas y mesas para eventos en Manizales. Entrega e instalación en toda la ciudad. Plegables, Tiffany y mesas redondas y rectangulares.',
+ '@sillasmanizales', null, 5, 'approved', 4.5,
+ '{mesas,plegables,instalacion,caldas}'),
+
+('Foto MZL Momentos',
+ 'Carolina Palomino', 'caro@fotomzl.co', '3001240099', 'Manizales',
+ '{fotografo}', 240000, 620000, 'flat', 0, null,
+ 'Fotografía para eventos en Manizales y Caldas. Cobertura 3-4 horas, galería digital y 15 fotos impresas de cortesía. Especialidad en eventos familiares y quinceañeras.',
+ '@fotomzl', null, 5, 'approved', 4.6,
+ '{caldas,galeria,quinces,familiar}'),
+
+('Recuerdos MZL',
+ 'Tatiana Gutiérrez', 'tati@recuerdosmzl.co', '3001240100', 'Manizales',
+ '{souvenirs,invitaciones}', 100000, 320000, 'per_child', 5500, null,
+ 'Souvenirs e invitaciones para fiestas en Manizales. Diseño cafetero: granos de café, colores de la región y personalización con nombre del festejado.',
+ '@recuerdosmzl', null, 3, 'approved', 4.4,
+ '{cafetero,granos,personalizado,regional}'),
+
+('DJ Manizales Sound',
+ 'Óscar Ríos', 'oscar@djmzlsound.co', '3001240101', 'Manizales',
+ '{dj_musica,sonido}', 260000, 700000, 'flat', 0, 180,
+ 'DJ y sonido para eventos en Manizales. Variedad musical: pop, vallenato, salsa y electrónica. Equipos con buen volumen para salones y fincas. Disponible fines de semana.',
+ '@djmzlsound', null, 5, 'approved', 4.6,
+ '{fincas,salones,vallenato,electro}'),
+
+('Meseros MZL Pro',
+ 'Patricia Gómez', 'paty@meseromzl.co', '3001240102', 'Manizales',
+ '{meseros,bebidas}', 220000, 700000, 'per_person', 13000, null,
+ 'Meseros y servicio de bebidas para eventos en Manizales. Personal uniformado y puntual. Disponible para fiestas de 20 a 120 personas en la ciudad.',
+ '@meseromzl', null, 6, 'approved', 4.5,
+ '{uniformado,puntual,bebidas,caldas}'),
+
+('Inflables MZL',
+ 'Camilo Cardona', 'cami@inflablesmzl.co', '3001240103', 'Manizales',
+ '{inflables}', 160000, 450000, 'flat', 0, 35,
+ 'Inflables para fiestas infantiles en Manizales. Castillos y toboganes. Instalación y operador incluidos. Servicio disponible todos los fines de semana.',
+ '@inflablesmzl', null, 3, 'approved', 4.3,
+ '{castillos,toboganes,fines_semana,operador}'),
+
+('Coordina MZL',
+ 'Isabel Correa', 'isa@coordinamzl.co', '3001240104', 'Manizales',
+ '{coordinador,flores}', 320000, 920000, 'flat', 0, null,
+ 'Coordinación de eventos y flores para fiestas en Manizales. Gestión total del día + arreglos florales cafeteros con flores de la región. Más de 150 eventos realizados.',
+ '@coordinamzl', null, 5, 'approved', 4.6,
+ '{flores_regionales,gestion,cafetero,150eventos}'),
+
+-- ══════════════════════════════════════════════════════════════
+-- COBERTURA BOGOTÁ/MEDELLÍN — servicios adicionales faltantes
+-- ══════════════════════════════════════════════════════════════
+
+-- pintucaritas Medellín (faltaba)
+('Color Art Medellín',
+ 'Valentina Soto', 'valen@colorartmed.co', '3001240105', 'Medellín',
+ '{pintucaritas}', 130000, 350000, 'flat', 0, 35,
+ 'Pintucaritas artística para fiestas infantiles en Medellín. Diseños de animales, personajes y flores. Pigmentos hipoalergénicos y lavables. Hasta 35 niños por evento.',
+ '@colorartmed', null, 4, 'approved', 4.7,
+ '{hipoalergenico,lavable,ninos,infantil}'),
+
+-- photobooth Barranquilla (extra)
+('RecordaFoto BGA',
+ 'Diana Nieto', 'diana@recordafoto.co', '3001240106', 'Bucaramanga',
+ '{photobooth,videografo}', 280000, 650000, 'flat', 0, null,
+ 'Photobooth y video para eventos en Bucaramanga. Cabina con impresión, galería digital y reel de 60 segundos. Fondo personalizado con el tema del evento.',
+ '@recordafotobga', null, 3, 'approved', 4.5,
+ '{impresion,reel,personalizado,santander}'),
+
+-- flores para más ciudades
+('Flores Santander',
+ 'Esperanza Díaz', 'esperanza@floressantander.co', '3001240107', 'Bucaramanga',
+ '{flores,arco_globos}', 130000, 520000, 'flat', 0, null,
+ 'Arreglos florales y arcos de globos para eventos en Bucaramanga y Santander. Flores frescas de la sabana y globos cromados. Instalación y desmontaje incluidos.',
+ '@floressantander', null, 5, 'approved', 4.6,
+ '{sabana,cromados,santander,instalacion}'),
+
+('Flores Manizales',
+ 'Lucelly Arias', 'lucy@floresmanizales.co', '3001240108', 'Manizales',
+ '{flores}', 120000, 480000, 'flat', 0, null,
+ 'Arreglos florales con flores del Eje Cafetero para eventos en Manizales. Rosas, claveles y flores de exportación. Diseños personalizados para todo tipo de celebración.',
+ '@floresmanizales', null, 6, 'approved', 4.6,
+ '{rosas,claveles,exportacion,eje}'),
+
+-- magia y show_infantil para más ciudades
+('Magia Caribe CTG',
+ 'Roberto Salas', 'roberto@magiacaribectg.co', '3001240109', 'Cartagena',
+ '{magia,show_infantil}', 230000, 530000, 'flat', 0, 70,
+ 'Mago y shows infantiles en Cartagena. Espectáculo con música caribeña, trucos sorprendentes y participación de los niños. 75 minutos de diversión garantizada.',
+ '@magiacaribectg', null, 5, 'approved', 4.7,
+ '{caribeño,trucos,participativo,75min}'),
+
+-- videografo para más ciudades
+('Video Cafetero PTO',
+ 'Andrés Tabares', 'andres@videocafetero.co', '3001240110', 'Pereira',
+ '{videografo}', 280000, 750000, 'flat', 0, null,
+ 'Videografía para eventos en Pereira y el Eje Cafetero. Video completo + reel para redes sociales. Cobertura de hasta 5 horas. Entrega en 10 días hábiles.',
+ '@videocafetero', null, 4, 'approved', 4.6,
+ '{reel,redes,cafetero,5horas}'),
+
+-- bartender para más ciudades
+('Bar Santander BGA',
+ 'Javier Mantilla', 'javier@barsantander.co', '3001240111', 'Bucaramanga',
+ '{bartender,bebidas}', 360000, 1050000, 'flat', 0, 100,
+ 'Bartender y bebidas para eventos en Bucaramanga. Cócteles con aguardiente santandereano, chichas artesanales y bebidas de frutas exóticas de la región.',
+ '@barsantanderbga', null, 5, 'approved', 4.6,
+ '{aguardiente,chicha,santandereana,exoticas}'),
+
+-- coordinador nacional adicional
+('Event Pro Nacional',
+ 'María Fernanda Castro', 'mafe@eventpronacional.co', '3001240112', 'Bogotá',
+ '{coordinador}', 450000, 1400000, 'flat', 0, null,
+ 'Coordinación premium de eventos con cobertura en todo Colombia. Gestión logística, proveedores y protocolo. Experiencia en eventos corporativos, sociales y bodas. Más de 800 eventos.',
+ '@eventpronacional', 'https://eventpronacional.co', 14, 'approved', 5.0,
+ '{premium,nacional,corporativo,800eventos}'),
+
+-- seguridad en más ciudades
+('Seguridad Cafetera',
+ 'Luis Eduardo García', 'luis@seguridadcafetera.co', '3001240113', 'Pereira',
+ '{seguridad}', 250000, 900000, 'flat', 0, 300,
+ 'Personal de seguridad para eventos en el Eje Cafetero. Pereira, Armenia y Manizales. Control de acceso, manejo de aforo y coordinación con organismos de seguridad.',
+ '@seguridadcafetera', null, 6, 'approved', 4.5,
+ '{eje_cafetero,aforo,control,acceso}'),
+
+-- limpieza en más ciudades
+('Aseo Rápido Medellín',
+ 'Sandra Reyes', 'sandra@aseormed.co', '3001240114', 'Medellín',
+ '{limpieza}', 170000, 650000, 'flat', 0, null,
+ 'Servicio de aseo post-evento en Medellín. Limpieza de salones, baños y zonas comunes. Personal puntual y con insumos propios. Disponible domingos y festivos.',
+ '@aseormed', null, 4, 'approved', 4.4,
+ '{post_evento,baños,domingos,insumos}'),
+
+-- transporte en más ciudades
+('Trans Eventos Medellín',
+ 'Guillermo Caro', 'guille@transeventos.co', '3001240115', 'Medellín',
+ '{transporte}', 200000, 750000, 'flat', 0, 50,
+ 'Transporte de invitados para eventos en Medellín y Antioquia. Vans, Sprinter y microbuses. Conductores certificados y vehículos en perfecto estado. Servicio 24/7.',
+ '@transeventosMed', null, 7, 'approved', 4.6,
+ '{sprinter,van,antioquia,24_7}'),
+
+-- invitaciones en más ciudades
+('Diseño & Fiesta Medellín',
+ 'Natalia Piedrahita', 'nata@diseñofiesta.co', '3001240116', 'Medellín',
+ '{invitaciones,recordatorios_digitales}', 40000, 190000, 'flat', 0, null,
+ 'Invitaciones y recordatorios digitales para eventos en Medellín. Animaciones personalizadas, RSVP online y distribución masiva por WhatsApp. Entrega en 24 horas.',
+ '@diseñofiestamed', null, 3, 'approved', 4.6,
+ '{animadas,masivo,rsvp,24horas}'),
+
+-- detalles_mesa más cobertura
+('Detalles para Fiestas CTG',
+ 'Claudia Beltrán', 'claudia@detallescartag.co', '3001240117', 'Cartagena',
+ '{detalles_mesa}', 100000, 420000, 'flat', 0, null,
+ 'Centros y detalles de mesa para eventos en Cartagena. Elementos tropicales y coloniales: conchas, bromelias, velas y portarretratos personalizados. Estilo caribeño elegante.',
+ '@detallescartag', null, 4, 'approved', 4.5,
+ '{conchas,bromelias,colonial,elegante}'),
+
+-- arco_globos más cobertura
+('Globos BGA',
+ 'Ángela Rodríguez', 'angela@globosbga.co', '3001240118', 'Bucaramanga',
+ '{arco_globos,decoracion}', 110000, 360000, 'flat', 0, null,
+ 'Arcos de globos y decoración para eventos en Bucaramanga. Globos cromados, pastel y neón. Armado en el lugar del evento. Diseños orgánicos y clásicos disponibles.',
+ '@globosbga', null, 3, 'approved', 4.4,
+ '{cromados,neon,organico,santander}'),
+
+-- mesa_dulces más cobertura
+('Dulces de la Ciudad CTG',
+ 'Rosa Elena Herazo', 'rosa@dulcesctg.co', '3001240119', 'Cartagena',
+ '{mesa_dulces}', 260000, 780000, 'flat', 0, null,
+ 'Mesa de dulces tropical para eventos en Cartagena. Postres con sabores del Caribe: cocadas, dulce de ñame y natilla costeña. Presentación con flores tropicales.',
+ '@dulcesctg', null, 4, 'approved', 4.6,
+ '{cocadas,ñame,natilla,tropical}'),
+
+-- catering completo más ciudades
+('Sabor Cafetero Pereira',
+ 'Nora Cardona', 'nora@saborcafetero.co', '3001240120', 'Pereira',
+ '{catering_completo,picadas_adultos}', 900000, 3000000, 'per_person', 22000, 120,
+ 'Catering completo y picadas para eventos en Pereira. Menú cafetero: sancocho, frijoles, patacones y postres típicos. Personal de servicio y vajilla incluidos.',
+ '@saborcafetero_pto', null, 7, 'approved', 4.7,
+ '{sancocho,frijoles,patacones,vajilla}');

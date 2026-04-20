@@ -47,7 +47,13 @@ export type ServiceType =
   // Recuerdos y detalles
   | "souvenirs"
   | "pinata"
-  | "invitaciones";
+  | "invitaciones"
+  | "recordatorios_digitales"
+  | "detalles_mesa"
+  | "algodon_azucar"
+  // Logística y producción
+  | "seguridad"
+  | "limpieza";
 
 /** How a supplier prices their service */
 export type PricingModel = "flat" | "per_child" | "per_adult" | "per_person";
@@ -212,6 +218,12 @@ export const SERVICE_LABELS: Record<ServiceType, string> = {
   souvenirs: "Souvenirs",
   pinata: "Piñata",
   invitaciones: "Invitaciones",
+  recordatorios_digitales: "Recordatorios digitales",
+  detalles_mesa: "Detalles de mesa",
+  algodon_azucar: "Algodón de azúcar",
+  // Logística y producción
+  seguridad: "Seguridad del evento",
+  limpieza: "Limpieza posterior",
 };
 
 export const SERVICE_ICONS: Record<ServiceType, string> = {
@@ -247,6 +259,11 @@ export const SERVICE_ICONS: Record<ServiceType, string> = {
   souvenirs: "🎁",
   pinata: "🪅",
   invitaciones: "✉️",
+  recordatorios_digitales: "📲",
+  detalles_mesa: "🌿",
+  algodon_azucar: "🍭",
+  seguridad: "🛡️",
+  limpieza: "🧹",
 };
 
 export const SERVICE_DESCRIPTIONS: Record<ServiceType, string> = {
@@ -282,6 +299,11 @@ export const SERVICE_DESCRIPTIONS: Record<ServiceType, string> = {
   souvenirs: "Recuerdos personalizados para los invitados (~$7.000/niño)",
   pinata: "Piñata personalizada con dulces y rompimiento",
   invitaciones: "Invitaciones digitales o físicas personalizadas",
+  recordatorios_digitales: "Recordatorio digital animado para enviar por WhatsApp",
+  detalles_mesa: "Centros de mesa y detalles decorativos para cada puesto",
+  algodon_azucar: "Máquina de algodón de azúcar, crispetas o palomitas",
+  seguridad: "Personal de seguridad y control de acceso para el evento",
+  limpieza: "Servicio de limpieza y desmontaje después del evento",
 };
 
 // ─── Service groups for the picker UI ─────────────────────────────────────────
@@ -314,7 +336,11 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
   },
   {
     label: "Recuerdos y detalles",
-    services: ["souvenirs", "pinata", "invitaciones"],
+    services: ["souvenirs", "pinata", "invitaciones", "recordatorios_digitales", "detalles_mesa", "algodon_azucar"],
+  },
+  {
+    label: "Logística y producción",
+    services: ["seguridad", "limpieza"],
   },
 ];
 
