@@ -14,6 +14,21 @@
 import { createClient } from "@/lib/supabase/server";
 import type { ServiceType, SupplierProfile, QuoteOptionType, PricingModel } from "@/types";
 
+// ─── City proximity (nearest first) ──────────────────────────────────────────
+// Used to rank out-of-city providers so the closest alternative is shown first.
+const NEARBY_CITIES: Record<string, string[]> = {
+  "Bogotá":       ["Manizales", "Pereira", "Ibagué", "Bucaramanga", "Medellín", "Cali", "Barranquilla", "Cartagena", "Santa Marta"],
+  "Medellín":     ["Manizales", "Pereira", "Bogotá", "Cali", "Bucaramanga", "Barranquilla", "Cartagena", "Ibagué", "Santa Marta"],
+  "Cali":         ["Pereira", "Manizales", "Medellín", "Ibagué", "Bogotá", "Bucaramanga", "Barranquilla", "Cartagena", "Santa Marta"],
+  "Barranquilla": ["Cartagena", "Santa Marta", "Bucaramanga", "Bogotá", "Medellín", "Cali", "Pereira", "Manizales", "Ibagué"],
+  "Cartagena":    ["Barranquilla", "Santa Marta", "Bucaramanga", "Bogotá", "Medellín", "Cali", "Pereira", "Manizales", "Ibagué"],
+  "Bucaramanga":  ["Bogotá", "Barranquilla", "Cartagena", "Medellín", "Santa Marta", "Cali", "Pereira", "Manizales", "Ibagué"],
+  "Pereira":      ["Manizales", "Medellín", "Cali", "Ibagué", "Bogotá", "Bucaramanga", "Barranquilla", "Cartagena", "Santa Marta"],
+  "Manizales":    ["Pereira", "Medellín", "Cali", "Ibagué", "Bogotá", "Bucaramanga", "Barranquilla", "Cartagena", "Santa Marta"],
+  "Ibagué":       ["Bogotá", "Pereira", "Manizales", "Cali", "Medellín", "Bucaramanga", "Barranquilla", "Cartagena", "Santa Marta"],
+  "Santa Marta":  ["Barranquilla", "Cartagena", "Bucaramanga", "Bogotá", "Medellín", "Cali", "Pereira", "Manizales", "Ibagué"],
+};
+
 // ─── Public types ─────────────────────────────────────────────────────────────
 
 export interface GeneratedItem {
@@ -141,21 +156,28 @@ export async function generateQuoteOptions(input: QuoteInput): Promise<Generated
     throw new Error("No se pudo obtener la lista de proveedores.");
   }
 
-  // Group by service; prefer same-city suppliers
+  // Group by service; prefer same-city, then nearest cities, then anywhere
+  const byRating = (a: SupplierProfile, b: SupplierProfile) =>
+    (b.rating ?? 4) - (a.rating ?? 4);
+  const nearbyOrder = NEARBY_CITIES[input.city] ?? [];
+  const nearbySet = new Set([input.city, ...nearbyOrder]);
+
   const byService: Record<string, SupplierProfile[]> = {};
   for (const service of input.services) {
     const matches = (suppliers as SupplierProfile[]).filter((s) =>
       s.service_categories.includes(service)
     );
-    const sameCity = matches.filter((s) => s.city === input.city);
-    const other = matches.filter((s) => s.city !== input.city);
-    // Within each group, sort by rating desc
-    const byRating = (a: SupplierProfile, b: SupplierProfile) =>
-      (b.rating ?? 4) - (a.rating ?? 4);
-    byService[service] = [
-      ...sameCity.sort(byRating),
-      ...other.sort(byRating),
-    ];
+    const sameCity = matches.filter((s) => s.city === input.city).sort(byRating);
+
+    // Build proximity-ordered list for other cities
+    const proximate: SupplierProfile[] = [];
+    for (const city of nearbyOrder) {
+      proximate.push(...matches.filter((s) => s.city === city).sort(byRating));
+    }
+    // Any city not in the proximity list goes last
+    const distant = matches.filter((s) => !nearbySet.has(s.city)).sort(byRating);
+
+    byService[service] = [...sameCity, ...proximate, ...distant];
   }
 
   const tiers: Array<{ type: QuoteOptionType; priceLevel: "low" | "mid" | "high" }> = [
@@ -163,11 +185,6 @@ export async function generateQuoteOptions(input: QuoteInput): Promise<Generated
     { type: "balanceada", priceLevel: "mid"  },
     { type: "premium",    priceLevel: "high" },
   ];
-
-  // Compute which services have no supplier at all (same for all tiers)
-  const unavailable_services = input.services.filter(
-    (s) => (byService[s] ?? []).length === 0
-  ) as ServiceType[];
 
   const options: GeneratedOption[] = [];
 
@@ -177,25 +194,45 @@ export async function generateQuoteOptions(input: QuoteInput): Promise<Generated
 
     for (const service of input.services) {
       const candidates = byService[service] ?? [];
-      if (candidates.length === 0) continue;
+
+      if (candidates.length === 0) {
+        // ── Multi-service bundle fallback ─────────────────────────────────────
+        // No dedicated provider exists globally. Reuse an already-picked
+        // supplier from this tier whose service_categories includes this service.
+        const bundleSupplier = items
+          .map((i) => i.supplier)
+          .find((s) => (s.service_categories as string[]).includes(service));
+
+        if (bundleSupplier) {
+          const { price, pricingNote } = computePrice(bundleSupplier, tier.priceLevel, input);
+          total += price;
+          items.push({
+            supplier_profile_id: bundleSupplier.id,
+            service_type: service,
+            item_name: bundleSupplier.business_name,
+            estimated_price_cop: price,
+            pricing_note: pricingNote,
+            notes: "Servicio adicional cubierto por el mismo proveedor.",
+            supplier: bundleSupplier,
+          });
+        }
+        // If no bundle possible, service stays unresolved → appears in unavailable_services
+        continue;
+      }
 
       // Pick supplier for this tier
       let picked: SupplierProfile;
       if (tier.priceLevel === "low") {
-        // Cheapest mid-price, same-city first (already sorted)
         picked = [...candidates].sort((a, b) => midPrice(a) - midPrice(b))[0];
       } else if (tier.priceLevel === "high") {
-        // Highest rated + most expensive
-        picked = candidates[0]; // already sorted by rating desc
+        picked = candidates[0]; // sorted by rating desc, proximity second
       } else {
-        // Best value: highest rating within budget share
         const budgetShare = Math.round(input.budget_cop / input.services.length);
         picked = candidates
           .slice()
           .sort((a, b) => {
             const aDiff = Math.abs(midPrice(a) - budgetShare);
             const bDiff = Math.abs(midPrice(b) - budgetShare);
-            // Prefer smaller price diff, break ties by rating
             if (Math.abs(aDiff - bDiff) < 50000) return (b.rating ?? 4) - (a.rating ?? 4);
             return aDiff - bDiff;
           })[0];
@@ -204,21 +241,31 @@ export async function generateQuoteOptions(input: QuoteInput): Promise<Generated
       const { price, pricingNote } = computePrice(picked, tier.priceLevel, input);
       total += price;
 
-      const cityNote =
-        picked.city !== input.city
-          ? `Proveedor en ${picked.city}. Confirmar disponibilidad de desplazamiento.`
-          : null;
+      // Build city note; distinguish nearby vs distant
+      let cityNote: string | null = null;
+      if (picked.city !== input.city) {
+        const proximityIndex = nearbyOrder.indexOf(picked.city);
+        cityNote =
+          proximityIndex !== -1 && proximityIndex < 3
+            ? `Proveedor en ${picked.city} (ciudad cercana).`
+            : `Proveedor en ${picked.city}. Confirmar disponibilidad de desplazamiento.`;
+      }
 
       items.push({
         supplier_profile_id: picked.id,
         service_type: service,
-        item_name: `${picked.business_name}`,
+        item_name: picked.business_name,
         estimated_price_cop: price,
         pricing_note: pricingNote,
         notes: cityNote,
         supplier: picked,
       });
     }
+
+    // Unavailable = requested services with no item resolved (no candidate + no bundle)
+    const unavailable_services = input.services.filter(
+      (s) => !items.some((i) => i.service_type === s)
+    ) as ServiceType[];
 
     const over_budget = total > input.budget_cop;
     const budget_gap = input.budget_cop - total;
