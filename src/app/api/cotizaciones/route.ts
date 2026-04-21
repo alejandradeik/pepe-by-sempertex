@@ -118,7 +118,6 @@ export async function POST(req: NextRequest) {
       const { error: optError } = await supabase
         .from("quote_options")
         .insert({
-          customer_id:      customerId,
           quote_request_id: quoteRequest.id,
           option_type:      opt.option_type,
           total_price_cop:  opt.total_price_cop,
